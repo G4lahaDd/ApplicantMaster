@@ -1,6 +1,7 @@
 package App.model.service;
 
 import App.model.entity.Faculty;
+import App.model.entity.User;
 import App.model.service.exception.ServiceException;
 import App.view.Main;
 import App.view.MainScreen;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class ApplicationDataService {
     private List<Faculty> faculties;
+    private User user;
     private static final ApplicationDataService INSTANCE = new ApplicationDataService();
     private ApplicationDataService(){}
 
@@ -31,6 +33,16 @@ public class ApplicationDataService {
                 System.out.println(faculties.get(i).getSpecializations().get(j).toString());
             }
         }
+    }
+
+    public boolean login(String login, String password) throws ServiceException{
+        UserService service = UserService.getInstance();
+        User user = service.getUser(login);
+        if(user != null & user.getPassword().equals(password)){
+            this.user = user;
+            return true;
+        }
+        else return false;
     }
 
     public List<Faculty> getFaculties() {

@@ -23,7 +23,6 @@ public class Main extends Application{
     public void start(Stage stage) throws Exception {
         asyncLoad.start();
         SplashScreen.create(stage);
-
     }
 
     public static void joinLoadThread(){

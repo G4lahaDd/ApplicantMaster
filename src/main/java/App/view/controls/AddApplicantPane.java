@@ -80,6 +80,8 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
     private Subject selectedFirstSubj;
     private Subject selectedSecondSubj;
     private PaneMode paneMode;
+    private EventHandler onClose;
+
     public AddApplicantPane() {
         super();
         load();
@@ -93,6 +95,7 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         this.applicant = applicant;
         loadData();
         paneMode = PaneMode.EDIT;
+        updateDataOnWindow();
     }
 
     private void loadData() {
@@ -125,18 +128,20 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         SpecializationToggle.setOnChooseFirst(this::selectFirstSpecialization);
         SpecializationToggle.setOnLostFirst(EventHandler -> onLostSpecialization());
 
-        //Перегрузка конвертера для обработки исключения
+        //Перегрузка конвертера с обработкой исключения, стандартный имеет необрабатываемое исключение
         StringConverter<LocalDate> converter = new StringConverter<LocalDate>() {
             private final StringConverter<LocalDate> base = datePicker.getConverter();
+
             @Override
             public String toString(LocalDate date) {
                 return base.toString(date);
             }
+
             @Override
             public LocalDate fromString(String string) {
                 try {
                     return base.fromString(string);
-                }catch (DateTimeParseException ex){
+                } catch (DateTimeParseException ex) {
                     System.out.println("Неверно введена дата");
                     return null;
                 }
@@ -146,23 +151,28 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
     }
 
     @Override
-    public void refresh(){
+    public void refresh() {
         ObservableList<String> facultiesAbbr = facultyChoiceBox.getItems();
         facultiesAbbr.clear();
         for (Faculty faculty : faculties) {
-                facultiesAbbr.add(faculty.getAbbreviation());
+            facultiesAbbr.add(faculty.getAbbreviation());
         }
+    }
+
+    public void setOnClose(EventHandler onClose) {
+        this.onClose = onClose;
     }
 
     private void selectFaculty() {
         pointsPane.setVisible(false);
         String selAbbr = facultyChoiceBox.getValue();
-        if(selAbbr.isEmpty()) return;
+        if (selAbbr == null) return;
+        if (selAbbr.isEmpty()) return;
         selectedFaculty = faculties.stream().filter(x -> x.getAbbreviation().equals(selAbbr))
                 .findAny().get();
         specializationList.getChildren().clear();
         SpecializationToggle.clear();
-        if(selectedFaculty.getSpecializations() == null) return;
+        if (selectedFaculty.getSpecializations() == null) return;
         for (Specialization specialization : selectedFaculty.getSpecializations()) {
             specializationList.getChildren().add(new SpecializationToggle(specialization));
         }
@@ -197,6 +207,36 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         }
     }
 
+    private void updateDataOnWindow() {
+        if (applicant == null) return;
+        nameField.setText(applicant.getName());
+        surnameField.setText(applicant.getSurname());
+        patronymicField.setText(applicant.getPatronymic());
+        datePicker.setValue(applicant.getBirthday());
+        isPaidCheckBox.setSelected(applicant.getOnPaidBase());
+
+        langPoints.setText(applicant.getLanguagePoints().toString());
+        schoolPoints.setText(applicant.getSchoolMark().toString());
+        firstPoints.setText(applicant.getFirstSubjPoints().toString());
+        secondPoints.setText(applicant.getSecondSubjPoints().toString());
+
+        int facultyId = applicant.getFacultyId();
+        Optional<Faculty> faculty = faculties.stream().filter(x -> x.getId().equals(facultyId)).findFirst();
+        if (faculty.isEmpty()) return;
+        selectedFaculty = faculty.get();
+        facultyChoiceBox.setValue(faculty.get().getAbbreviation());
+        Map<Integer, Integer> prioritySpec = applicant.getPrioritySpecializations();
+        for(int i = 1; i <= prioritySpec.size(); i++){
+            int specId = prioritySpec.get(i);
+            Optional<Node> toggle = specializationList
+                    .getChildren().stream()
+                    .filter(x -> ((SpecializationToggle)x).getSpecialization()
+                    .getId().equals(specId)).findFirst();
+            if(toggle.isEmpty()) continue;
+            ((SpecializationToggle)toggle.get()).select();
+        }
+    }
+
     private void add() {
         try {
             String surname = getText(surnameField);
@@ -208,24 +248,24 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
             int schoolPoints = getInt(this.schoolPoints);
 
             LocalDate birthday = datePicker.getValue();
-            if(birthday == null) throw new DateTimeException("null");
+            if (birthday == null) throw new DateTimeException("null");
 
             boolean isPaid = isPaidCheckBox.isSelected();
 
             Map<Integer, Integer> specializationMap = new HashMap<>();
             for (Node node : specializationList.getChildren()) {
                 SpecializationToggle toggle = (SpecializationToggle) node;
-                if(toggle.getIndex() > 0){
+                if (toggle.getIndex() > 0) {
                     specializationMap.put(toggle.getIndex(), toggle.getSpecialization().getId());
                 }
             }
-            if(specializationMap.size() == 0) {
+            if (specializationMap.size() == 0) {
                 new MessageBox("необходимо выбрать специальности");
                 return;
             }
 
             String commandName = "edit-applicant";
-            if(paneMode == PaneMode.ADD){
+            if (paneMode == PaneMode.ADD) {
                 applicant = new Applicant();
                 commandName = "add-applicant";
             }
@@ -245,8 +285,10 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
             param.addParameter(ParamName.APPLICANT, applicant);
             Controller.getInstance().doCommand(commandName, param);
 
-            if(paneMode == PaneMode.ADD){
+            if (paneMode == PaneMode.ADD) {
                 clear();
+            } else {
+                close();
             }
         } catch (DateTimeException ex) {
             new MessageBox("Ошибка ввода даты");
@@ -260,7 +302,7 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         }
     }
 
-    private void clear(){
+    private void clear() {
         nameField.setText("");
         surnameField.setText("");
         patronymicField.setText("");
@@ -278,27 +320,29 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         SpecializationToggle.clear();
     }
 
-    private void close(){
-
+    private void close() {
+        if (onClose != null) {
+            onClose.handle(new Event(Event.ANY));
+        }
     }
 
-    private String getText(TextField field) throws EmptyFieldException{
-        if(field.getText().isEmpty()){
+    private String getText(TextField field) throws EmptyFieldException {
+        if (field.getText().isEmpty()) {
             throw new EmptyFieldException();
         }
         return field.getText();
     }
 
-    private int getInt(TextField field) throws EmptyFieldException, NumberFormatException{
-        if(field.getText().isEmpty()){
+    private int getInt(TextField field) throws EmptyFieldException, NumberFormatException {
+        if (field.getText().isEmpty()) {
             throw new EmptyFieldException();
         }
         int result = Integer.parseInt(field.getText());
-        if(result <= 0) throw new NumberFormatException();
+        if (result <= 0) throw new NumberFormatException();
         return result;
     }
 
-    private enum PaneMode{
+    private enum PaneMode {
         EDIT,
         ADD
     }

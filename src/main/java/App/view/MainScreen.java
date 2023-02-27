@@ -1,5 +1,6 @@
 package App.view;
 
+import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
 import App.model.service.ApplicationDataService;
@@ -23,6 +24,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +48,22 @@ public class MainScreen extends GridPane implements Window, Initializable {
     public MainScreen(){
         Main.setCurrentWindow(this);
         load();
+        //test
+        Applicant test = new Applicant();
+        test.setName("Ilya");
+        test.setSurname("Kazyro");
+        test.setPatronymic("Alexandrovich");
+        test.setBirthday(LocalDate.of(2003,4,30));
+        test.setOnPaidBase(false);
+        test.setFacultyId(2);
+        Map<Integer, Integer> priority = new HashMap<>();
+        priority.put(1,1);
+        test.setPrioritySpecializations(priority);
+        test.setSchoolMark(90);
+        test.setLanguagePoints(48);
+        test.setFirstSubjPoints(96);
+        test.setSecondSubjPoints(85);
+        new EditApplicantWindow(test);
     }
 
     private void load() {

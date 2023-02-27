@@ -59,6 +59,11 @@ public class SpecializationToggle extends AnchorPane implements Initializable {
         toggle.setOnAction(EventHandler -> action());
     }
 
+    public void select(){
+        toggle.setSelected(true);
+        action();
+    }
+
     private void action() {
         if(index < 0) specToggleGroup.add(this);
         else specToggleGroup.remove(this);
