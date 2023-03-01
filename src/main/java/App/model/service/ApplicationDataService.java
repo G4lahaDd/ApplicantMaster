@@ -38,7 +38,8 @@ public class ApplicationDataService {
     public boolean login(String login, String password) throws ServiceException{
         UserService service = UserService.getInstance();
         User user = service.getUser(login);
-        if(user != null & user.getPassword().equals(password)){
+        if(user == null) return false;
+        if(user.getPassword().equals(password)){
             this.user = user;
             return true;
         }

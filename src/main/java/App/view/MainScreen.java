@@ -4,10 +4,7 @@ import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
 import App.model.service.ApplicationDataService;
-import App.view.controls.AddApplicantPane;
-import App.view.controls.FacultyPane;
-import App.view.controls.Refreshable;
-import App.view.controls.SpecializationPane;
+import App.view.controls.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -49,7 +46,7 @@ public class MainScreen extends GridPane implements Window, Initializable {
         Main.setCurrentWindow(this);
         load();
         //test
-        Applicant test = new Applicant();
+        /*Applicant test = new Applicant();
         test.setName("Ilya");
         test.setSurname("Kazyro");
         test.setPatronymic("Alexandrovich");
@@ -63,7 +60,7 @@ public class MainScreen extends GridPane implements Window, Initializable {
         test.setLanguagePoints(48);
         test.setFirstSubjPoints(96);
         test.setSecondSubjPoints(85);
-        new EditApplicantWindow(test);
+        new EditApplicantWindow(test);*/
     }
 
     private void load() {
@@ -91,8 +88,7 @@ public class MainScreen extends GridPane implements Window, Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        faculties = ApplicationDataService.getInstance().getFaculties();
-        FacultyPane facultyPane = new FacultyPane(faculties);
+        LoginPane facultyPane = new LoginPane(EventHandler -> successLogin());
         facultyPane.setVisible(false);
         contentPane.getChildren().add(facultyPane);
         AnchorPane.setLeftAnchor(facultyPane,0d);
@@ -143,6 +139,22 @@ public class MainScreen extends GridPane implements Window, Initializable {
     @Override
     public Stage getStage(){
         return mainWindow;
+    }
+
+    private void successLogin(){
+        faculties = ApplicationDataService.getInstance().getFaculties();
+        FacultyPane facultyPane = new FacultyPane(faculties);
+        facultyPane.setVisible(false);
+        contentPane.getChildren().add(facultyPane);
+        AnchorPane.setLeftAnchor(facultyPane,0d);
+        AnchorPane.setRightAnchor(facultyPane,0d);
+        AnchorPane.setBottomAnchor(facultyPane, 0d);
+        AnchorPane.setTopAnchor(facultyPane, 0d);
+        Node node = pages.get(PagesName.FACULTIES);
+        node.setVisible(false);
+        contentPane.getChildren().remove(node);
+        pages.replace(PagesName.FACULTIES, facultyPane);
+        facultyPane.setVisible(true);
     }
 
     private class PagesName{

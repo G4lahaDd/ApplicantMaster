@@ -145,6 +145,7 @@ public class FacultyPane extends GridPane implements Initializable {
                 .filter(x -> ((FacultyToggle)x).getFaculty().equals(selectedFaculty))
                 .findFirst().get();
         facultyList.getChildren().remove(toggle);
+        faculties.remove(selectedFaculty);
         selectedFaculty = null;
         updateFacultyData();
     }

@@ -11,6 +11,9 @@ public enum CommandName {
     }},
     OPEN_MAIN_WINDOW{{
         current = new OpenMainWindowCommand();
+    }},
+    LOGIN{{
+        current = new LoginCommand();
     }};
     Command current = null;
     public Command getCurrentCommand() {

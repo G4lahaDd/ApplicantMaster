@@ -12,6 +12,7 @@ import App.view.Exception.EmptyFieldException;
 import App.view.Main;
 import App.view.MainScreen;
 import App.view.MessageBox;
+import App.view.Parser;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
@@ -239,13 +240,13 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
 
     private void add() {
         try {
-            String surname = getText(surnameField);
-            String name = getText(nameField);
-            String patronymic = getText(nameField);
-            int lang = getInt(langPoints);
-            int firstSubj = getInt(firstPoints);
-            int secondSubj = getInt(secondPoints);
-            int schoolPoints = getInt(this.schoolPoints);
+            String surname = Parser.getText(surnameField);
+            String name = Parser.getText(nameField);
+            String patronymic = Parser.getText(nameField);
+            int lang = Parser.getInt(langPoints);
+            int firstSubj = Parser.getInt(firstPoints);
+            int secondSubj = Parser.getInt(secondPoints);
+            int schoolPoints = Parser.getInt(this.schoolPoints);
 
             LocalDate birthday = datePicker.getValue();
             if (birthday == null) throw new DateTimeException("null");
@@ -324,22 +325,6 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         if (onClose != null) {
             onClose.handle(new Event(Event.ANY));
         }
-    }
-
-    private String getText(TextField field) throws EmptyFieldException {
-        if (field.getText().isEmpty()) {
-            throw new EmptyFieldException();
-        }
-        return field.getText();
-    }
-
-    private int getInt(TextField field) throws EmptyFieldException, NumberFormatException {
-        if (field.getText().isEmpty()) {
-            throw new EmptyFieldException();
-        }
-        int result = Integer.parseInt(field.getText());
-        if (result <= 0) throw new NumberFormatException();
-        return result;
     }
 
     private enum PaneMode {
