@@ -67,10 +67,8 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Button fx:id="closeButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Отмена" GridPane.columnIndex="1">
-                  </Button>
-                  <Button fx:id="saveButton" layoutX="238.0" layoutY="21.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Сохранить" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                  </Button>
+                  <Button fx:id="closeButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Отмена" GridPane.columnIndex="1"/>
+                  <Button fx:id="saveButton" layoutX="238.0" layoutY="21.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Сохранить" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                   <ChoiceBox fx:id="firstSubject" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" />
                   <ChoiceBox fx:id="secondSubject" layoutX="10.0" layoutY="16.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.rowIndex="1" />
                </children>

@@ -7,6 +7,9 @@ import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
 import App.model.service.ApplicationDataService;
+import App.view.ConfirmBox;
+import App.view.EditApplicantWindow;
+import App.view.MainScreen;
 import App.view.MessageBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,8 +20,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
@@ -35,9 +40,9 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
     @FXML
     private Button findButton;
     @FXML
-    private ScrollPane scrollPane;
+    private Button deleteSelectedButton;
     @FXML
-    private VBox applicantsList;
+    private ListView<ApplicantTableRow> applicantsList;
     @FXML
     private ChoiceBox<String> facultyChoiceBox;
     @FXML
@@ -53,9 +58,10 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
     private Faculty selectedFaculty;
     private Specialization selectedSpecialization;
 
-    public ApplicantsPane() {
+    public ApplicantsPane(EventHandler OnOpenAddApplicantPage) {
         super();
         load();
+        addButton.setOnAction(OnOpenAddApplicantPage);
     }
 
     private void load() {
@@ -72,8 +78,7 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         faculties = ApplicationDataService.getInstance().getFaculties();
-        applicantsList.prefWidthProperty().bind(scrollPane.widthProperty());
-        applicantsList.setPadding(new Insets(0, 20, 0, 0));
+        applicantsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         facultiesAbbr = FXCollections.observableArrayList();
         if (faculties != null)
@@ -88,7 +93,9 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         updateSpecChoiceBox();
         specChoiceBox.setOnAction(EventHandler -> selectSpecialization());
 
+        addButton.setOnAction(EventHandler -> add());
         findButton.setOnAction(EventHandler -> find());
+        deleteSelectedButton.setOnAction(EventHandler -> deleteSelected());
     }
 
     @Override
@@ -152,6 +159,12 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         }
     }
 
+    private void add(){
+        Parent parent = this.getParent().getParent().getParent();
+        if( parent instanceof MainScreen){
+            System.out.println("kuku");
+        }
+    }
     private void find(){
         Param param = new Param();
         param.addParameter(ParamName.RESPONSE, (EventHandler)this::getResult);
@@ -191,11 +204,35 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
                 return;
             }
             List<Applicant> applicants = (List<Applicant>)object;
-            applicantsList.getChildren().clear();
-            for (int i = 0; i < applicants.size(); i++){
-                applicantsList.getChildren().add(
-                        new ApplicantTableRow(applicants.get(i)));
+            ObservableList<ApplicantTableRow> items = applicantsList.getItems();
+            if(items == null){
+                items = FXCollections.observableArrayList();
+                applicantsList.setItems(items);
             }
+            items.clear();
+            for (int i = 0; i < applicants.size(); i++){
+                ApplicantTableRow row = new ApplicantTableRow(applicants.get(i));
+                row.prefWidthProperty().bind(applicantsList.widthProperty().subtract(25));
+                items.add(row);
+            }
+        }
+    }
+
+    private void deleteSelected(){
+
+        ObservableList<ApplicantTableRow> selection = applicantsList.getSelectionModel().getSelectedItems();
+        if(selection.size() == 0) return;
+        String message = "Вы уверены что хотите удалить " + selection.size();
+        if(selection.size() == 1) message += " запись?";
+        else if(selection.size() < 5) message += " записи?";
+        else message += " записей?";
+        if(!ConfirmBox.Show(message)){
+            return;
+        }
+        ObservableList<ApplicantTableRow> rows = applicantsList.getItems();
+        for(int i = selection.size() - 1; i >= 0; i--){
+            selection.get(i).delete();
+            rows.remove(selection.get(i));
         }
     }
 }

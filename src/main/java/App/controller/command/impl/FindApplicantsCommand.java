@@ -38,7 +38,7 @@ public class FindApplicantsCommand implements Command {
             Boolean isPaid = (Boolean) params.getParameter(ParamName.IS_PAID);
             if (isPaid != null) {
                 if (sql_filter.length() > 0) sql_filter.append(" AND");
-                sql_filter.append(" on_paid_base = ").append(isPaid ? 0 : 1);
+                sql_filter.append(" on_paid_base = ").append(isPaid ? 1 : 0);
             }
 
             Integer specId = (Integer) params.getParameter(ParamName.SPECIALIZATION);

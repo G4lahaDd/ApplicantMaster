@@ -242,7 +242,7 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         try {
             String surname = Parser.getText(surnameField);
             String name = Parser.getText(nameField);
-            String patronymic = Parser.getText(nameField);
+            String patronymic = Parser.getText(patronymicField);
             int lang = Parser.getInt(langPoints);
             int firstSubj = Parser.getInt(firstPoints);
             int secondSubj = Parser.getInt(secondPoints);

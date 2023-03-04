@@ -34,9 +34,9 @@
         </rowConstraints>
          <children>
             <Button fx:id="loginButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Войти" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
-            <Label text="Вход" GridPane.halignment="CENTER" />
-            <Label layoutX="10.0" layoutY="23.0" text="Логин:" GridPane.rowIndex="1" />
-            <Label layoutX="10.0" layoutY="23.0" text="Пароль:" GridPane.rowIndex="3" />
+            <Label styleClass="title-label" text="Вход" GridPane.halignment="CENTER" />
+            <Label styleClass="title-label" layoutX="10.0" layoutY="23.0" text="Логин:" GridPane.rowIndex="1" />
+            <Label styleClass="title-label" layoutX="10.0" layoutY="23.0" text="Пароль:" GridPane.rowIndex="3" />
             <TextField fx:id="loginField" GridPane.rowIndex="2" />
             <PasswordField fx:id="passwordField" GridPane.rowIndex="4" />
          </children>

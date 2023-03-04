@@ -1,8 +1,12 @@
 package App.view.controls;
 
+import App.controller.Controller;
+import App.controller.command.Param;
+import App.controller.command.ParamName;
 import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.service.ApplicationDataService;
+import App.view.EditApplicantWindow;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -36,8 +40,6 @@ public class ApplicantTableRow extends GridPane implements Initializable, Refres
     private Label isPaid;
     @FXML
     private Button editButton;
-    @FXML
-    private Button deleteButton;
 
 
     private Applicant applicant;
@@ -83,14 +85,16 @@ public class ApplicantTableRow extends GridPane implements Initializable, Refres
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         editButton.setOnAction(EventHandler -> edit());
-        deleteButton.setOnAction(EventHandler -> delete());
     }
 
     private void edit(){
-
+        new EditApplicantWindow(applicant);
+        refresh();
     }
 
-    private void delete(){
-
+    public void delete(){
+        Param params = new Param();
+        params.addParameter(ParamName.APPLICANT, applicant);
+        Controller.getInstance().doCommand("delete-applicant",params);
     }
 }

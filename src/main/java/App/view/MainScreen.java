@@ -17,6 +17,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -34,6 +35,12 @@ public class MainScreen extends GridPane implements Window, Initializable {
     private RadioButton groupsToggle;
     @FXML
     private RadioButton facultyToggle;
+
+    @FXML
+    private HBox menu;
+    @FXML
+    private Button backButton;
+
     @FXML
     private AnchorPane contentPane;
 
@@ -45,22 +52,6 @@ public class MainScreen extends GridPane implements Window, Initializable {
     public MainScreen(){
         Main.setCurrentWindow(this);
         load();
-        //test
-        /*Applicant test = new Applicant();
-        test.setName("Ilya");
-        test.setSurname("Kazyro");
-        test.setPatronymic("Alexandrovich");
-        test.setBirthday(LocalDate.of(2003,4,30));
-        test.setOnPaidBase(false);
-        test.setFacultyId(2);
-        Map<Integer, Integer> priority = new HashMap<>();
-        priority.put(1,1);
-        test.setPrioritySpecializations(priority);
-        test.setSchoolMark(90);
-        test.setLanguagePoints(48);
-        test.setFirstSubjPoints(96);
-        test.setSecondSubjPoints(85);
-        new EditApplicantWindow(test);*/
     }
 
     private void load() {
@@ -85,28 +76,26 @@ public class MainScreen extends GridPane implements Window, Initializable {
         }
     }
 
+    public <T extends Node> T fitPage(T page){
+        page.setVisible(false);
+        contentPane.getChildren().add(page);
+        AnchorPane.setLeftAnchor(page,0d);
+        AnchorPane.setRightAnchor(page,0d);
+        AnchorPane.setBottomAnchor(page, 0d);
+        AnchorPane.setTopAnchor(page, 0d);
+        return page;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        LoginPane facultyPane = new LoginPane(EventHandler -> successLogin());
-        facultyPane.setVisible(false);
-        contentPane.getChildren().add(facultyPane);
-        AnchorPane.setLeftAnchor(facultyPane,0d);
-        AnchorPane.setRightAnchor(facultyPane,0d);
-        AnchorPane.setBottomAnchor(facultyPane, 0d);
-        AnchorPane.setTopAnchor(facultyPane, 0d);
-
-        //AddApplicantPane applicantPane = new AddApplicantPane();
-        ApplicantsPane applicantPane = new ApplicantsPane();
-        applicantPane.setVisible(false);
-        contentPane.getChildren().add(applicantPane);
-        AnchorPane.setLeftAnchor(applicantPane,0d);
-        AnchorPane.setRightAnchor(applicantPane,0d);
-        AnchorPane.setBottomAnchor(applicantPane, 0d);
-        AnchorPane.setTopAnchor(applicantPane, 0d);
+        LoginPane facultyPane = fitPage(new LoginPane(EventHandler -> successLogin()));
+        AddApplicantPane addApplicantPane = fitPage(new AddApplicantPane());
+        ApplicantsPane applicantPane = fitPage(new ApplicantsPane(EventHandler -> openAddApplicantPage()));
 
         pages = new HashMap<>();
         pages.put(PagesName.FACULTIES, facultyPane);
+        pages.put(PagesName.ADD_APPLICANT, addApplicantPane);
         pages.put(PagesName.APPLICANTS, applicantPane);
 
         applicantToggle.setOnAction(EventHandler -> selectPage(PagesName.APPLICANTS));
@@ -114,7 +103,8 @@ public class MainScreen extends GridPane implements Window, Initializable {
 
         applicantToggle.setSelected(true);
         applicantPane.setVisible(true);
-        //Добивать все
+
+        backButton.setOnAction(EventHandler -> back());
     }
 
     private void selectPage(String pageName){
@@ -126,6 +116,18 @@ public class MainScreen extends GridPane implements Window, Initializable {
             ((Refreshable) selectedPage).refresh();
         }
         selectedPage.setVisible(true);
+    }
+
+    private void back(){
+        menu.setVisible(true);
+        backButton.setVisible(false);
+        selectPage(PagesName.APPLICANTS);
+    }
+
+    private void openAddApplicantPage(){
+        menu.setVisible(false);
+        backButton.setVisible(true);
+        selectPage(PagesName.ADD_APPLICANT);
     }
 
     @Override
@@ -141,13 +143,7 @@ public class MainScreen extends GridPane implements Window, Initializable {
 
     private void successLogin(){
         faculties = ApplicationDataService.getInstance().getFaculties();
-        FacultyPane facultyPane = new FacultyPane(faculties);
-        facultyPane.setVisible(false);
-        contentPane.getChildren().add(facultyPane);
-        AnchorPane.setLeftAnchor(facultyPane,0d);
-        AnchorPane.setRightAnchor(facultyPane,0d);
-        AnchorPane.setBottomAnchor(facultyPane, 0d);
-        AnchorPane.setTopAnchor(facultyPane, 0d);
+        FacultyPane facultyPane = fitPage(new FacultyPane(faculties));
         Node node = pages.get(PagesName.FACULTIES);
         node.setVisible(false);
         contentPane.getChildren().remove(node);
@@ -159,5 +155,6 @@ public class MainScreen extends GridPane implements Window, Initializable {
         private static final String FACULTIES = "faculties";
         private static final String GROUPS = "groups";
         private static final String APPLICANTS = "applicants";
+        private static final String ADD_APPLICANT = "add_applicants";
     }
 }
