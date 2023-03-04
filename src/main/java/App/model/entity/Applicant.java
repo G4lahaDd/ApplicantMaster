@@ -1,5 +1,9 @@
 package App.model.entity;
 
+import App.model.service.ApplicationDataService;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+
 import java.time.LocalDate;
 import java.util.*;
 
@@ -43,6 +47,7 @@ public class Applicant {
 
     public String getPatronymic() {
         return patronymic;
+
     }
 
     public void setPatronymic(String patronymic) {
@@ -119,5 +124,25 @@ public class Applicant {
 
     public int getTotalMark(){
         return languagePoints + firstSubjPoints + secondSubjPoints + schoolMark;
+    }
+
+    public String getInitials(){
+        return surname + " " + name + " " + patronymic;
+    }
+
+    @Override
+    public String toString() {
+        return "Applicant{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", patronymic='" + patronymic + '\'' +
+                ", languagePoints=" + languagePoints +
+                ", firstSubjPoints=" + firstSubjPoints +
+                ", secondSubjPoints=" + secondSubjPoints +
+                ", schoolMark=" + schoolMark +
+                ", onPaidBase=" + onPaidBase +
+                ", birthday=" + birthday +
+                '}';
     }
 }

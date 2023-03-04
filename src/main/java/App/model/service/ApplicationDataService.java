@@ -12,7 +12,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class ApplicationDataService {
     private List<Faculty> faculties;
@@ -48,5 +51,10 @@ public class ApplicationDataService {
 
     public List<Faculty> getFaculties() {
         return faculties;
+    }
+
+    public Faculty getFacultyById(Integer id){
+        return faculties.stream().filter(x -> x.getId()
+                .equals(id)).findFirst().get();
     }
 }

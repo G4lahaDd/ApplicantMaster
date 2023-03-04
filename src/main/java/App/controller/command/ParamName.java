@@ -6,5 +6,9 @@ public enum ParamName {
     APPLICANT,
     LOGIN,
     PASSWORD,
-    RESPONSE
+    RESPONSE,
+    SURNAME,
+    NAME,
+    PATRONYMIC,
+    IS_PAID
 }

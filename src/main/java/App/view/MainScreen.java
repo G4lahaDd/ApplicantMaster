@@ -96,7 +96,8 @@ public class MainScreen extends GridPane implements Window, Initializable {
         AnchorPane.setBottomAnchor(facultyPane, 0d);
         AnchorPane.setTopAnchor(facultyPane, 0d);
 
-        AddApplicantPane applicantPane = new AddApplicantPane();
+        //AddApplicantPane applicantPane = new AddApplicantPane();
+        ApplicantsPane applicantPane = new ApplicantsPane();
         applicantPane.setVisible(false);
         contentPane.getChildren().add(applicantPane);
         AnchorPane.setLeftAnchor(applicantPane,0d);
@@ -113,9 +114,6 @@ public class MainScreen extends GridPane implements Window, Initializable {
 
         applicantToggle.setSelected(true);
         applicantPane.setVisible(true);
-        /*contentPane.getChildren().add(pane);
-        AnchorPane.setLeftAnchor(pane,0d);
-        AnchorPane.setRightAnchor(pane,0d);*/
         //Добивать все
     }
 

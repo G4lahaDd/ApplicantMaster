@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class ApplicantDao {
     private static final String SQL_GET_ALL_APPLICANT = "SELECT * FROM applicants";
-    private static final String SQL_GET_ALL_APPLICANT_BY_FACULTY = "SELECT * FROM applicants WHERE faculty_id = ?";
+    private static final String SQL_GET_ALL_APPLICANT_BY_FILTER = "SELECT * FROM applicants WHERE ";
     private static final String SQL_ADD_APPLICANT = "INSERT INTO applicants VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_UPDATE_APPLICANT = "UPDATE applicants " +
             "SET name = ?, surname = ?, " +
@@ -51,19 +51,18 @@ public class ApplicantDao {
         return results;
     }
 
-    public List<Applicant> getAllApplicantInFaculty(int facultyId) throws DaoException {
+    public List<Applicant> getAllApplicantByFilter(String sql_filter) throws DaoException {
         List<Applicant> results = new ArrayList<>();
         try (
                 Connection connection = db.getConnection();
-                PreparedStatement statement = connection.prepareStatement(SQL_GET_ALL_APPLICANT_BY_FACULTY);
+                PreparedStatement statement = connection.prepareStatement(SQL_GET_ALL_APPLICANT_BY_FILTER + sql_filter);
         ) {
-            statement.setInt(1, facultyId);
             ResultSet resultSet = statement.executeQuery();
             while(resultSet.next()){
                 results.add(CreateApplicant(resultSet));
             }
         } catch (SQLException | ServiceException ex) {
-            throw new DaoException("Error while get all applicants in faculty");
+            throw new DaoException("Error while get all applicants by filter");
         }
         return results;
     }

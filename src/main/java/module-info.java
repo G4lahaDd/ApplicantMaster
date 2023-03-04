@@ -10,4 +10,7 @@ module App{
     opens App.view to javafx.fxml;
     exports App.view.controls;
     opens App.view.controls to javafx.fxml;
+    exports App.model.entity;
+    opens App.model.entity to javafx.fxml;
+
 }
