@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane hgap="8.0" prefHeight="10000.0" prefWidth="10000.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="200.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
+        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <Button fx:id="createButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Создать" />
+        <ChoiceBox fx:id="facultyChoice" prefWidth="150.0" GridPane.columnIndex="1" />
+        <ChoiceBox fx:id="specializationChoice" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="2" />
+        <GridPane GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="60.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="18.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Label styleClass="title-label" text="ФИО" />
+                <Label alignment="CENTER" layoutX="10.0" layoutY="17.0" maxWidth="1.7976931348623157E308" styleClass="table-name" text="Дата" GridPane.columnIndex="1" />
+                <Label alignment="CENTER" layoutX="10.0" layoutY="17.0" maxWidth="1.7976931348623157E308" styleClass="table-name" text="Баллы" GridPane.columnIndex="2" />
+                <Label alignment="CENTER" layoutX="10.0" layoutY="17.0" maxWidth="1.7976931348623157E308" styleClass="table-name" text="П/Б" GridPane.columnIndex="3" />
+            </children>
+        </GridPane>
+        <ListView fx:id="groupView" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+        <GridPane GridPane.rowIndex="2">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="40" minHeight="40" prefHeight="40.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <VBox fx:id="groupsList" prefHeight="200.0" prefWidth="100.0" />
+            <Button fx:id="exportButton" maxWidth="150" text="Экспорт" GridPane.rowIndex="1" />
+        </GridPane>
+    </children>
+    <padding>
+        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+    </padding>
+</GridPane>

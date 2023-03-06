@@ -96,6 +96,7 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         this.applicant = applicant;
         loadData();
         paneMode = PaneMode.EDIT;
+        SpecializationToggle.clear();
         updateDataOnWindow();
     }
 
@@ -155,6 +156,12 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
     public void refresh() {
         ObservableList<String> facultiesAbbr = facultyChoiceBox.getItems();
         facultiesAbbr.clear();
+        selectedFaculty = null;
+        facultyChoiceBox.setValue("");
+        specializationList.getChildren().clear();
+        SpecializationToggle.clear();
+        SpecializationToggle.setOnChooseFirst(this::selectFirstSpecialization);
+        SpecializationToggle.setOnLostFirst(EventHandler -> onLostSpecialization());
         for (Faculty faculty : faculties) {
             facultiesAbbr.add(faculty.getAbbreviation());
         }

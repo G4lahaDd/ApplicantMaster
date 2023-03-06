@@ -3,6 +3,7 @@ package App.view;
 import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
+import App.model.entity.groups.Group;
 import App.model.service.ApplicationDataService;
 import App.view.controls.*;
 import javafx.event.EventHandler;
@@ -92,14 +93,17 @@ public class MainScreen extends GridPane implements Window, Initializable {
         LoginPane facultyPane = fitPage(new LoginPane(EventHandler -> successLogin()));
         AddApplicantPane addApplicantPane = fitPage(new AddApplicantPane());
         ApplicantsPane applicantPane = fitPage(new ApplicantsPane(EventHandler -> openAddApplicantPage()));
+        GroupPane groupPane = fitPage(new GroupPane());
 
         pages = new HashMap<>();
         pages.put(PagesName.FACULTIES, facultyPane);
         pages.put(PagesName.ADD_APPLICANT, addApplicantPane);
         pages.put(PagesName.APPLICANTS, applicantPane);
+        pages.put(PagesName.GROUPS, groupPane);
 
         applicantToggle.setOnAction(EventHandler -> selectPage(PagesName.APPLICANTS));
         facultyToggle.setOnAction(EventHandler -> selectPage(PagesName.FACULTIES));
+        groupsToggle.setOnAction(EventHandler -> selectPage(PagesName.GROUPS));
 
         applicantToggle.setSelected(true);
         applicantPane.setVisible(true);

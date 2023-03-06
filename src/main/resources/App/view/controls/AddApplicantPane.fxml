@@ -95,7 +95,7 @@
                   <TextField fx:id="schoolPoints" layoutX="10.0" layoutY="13.0" maxHeight="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                   <TextField fx:id="firstPoints" layoutX="10.0" layoutY="13.0" maxHeight="1.7976931348623157E308" GridPane.rowIndex="3" />
                   <CheckBox fx:id="isPaidCheckBox" mnemonicParsing="false" text="На платной основе" GridPane.columnSpan="2" GridPane.rowIndex="4" />
-                  <Button fx:id="addButton" alignment="CENTER" mnemonicParsing="false" text="Добавить" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+                  <Button fx:id="addButton" alignment="CENTER" mnemonicParsing="false" text="Сохранить" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
                </children>
             </GridPane>
          </children>

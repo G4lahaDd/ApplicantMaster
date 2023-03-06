@@ -93,7 +93,6 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         updateSpecChoiceBox();
         specChoiceBox.setOnAction(EventHandler -> selectSpecialization());
 
-        addButton.setOnAction(EventHandler -> add());
         findButton.setOnAction(EventHandler -> find());
         deleteSelectedButton.setOnAction(EventHandler -> deleteSelected());
     }
@@ -159,12 +158,6 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         }
     }
 
-    private void add(){
-        Parent parent = this.getParent().getParent().getParent();
-        if( parent instanceof MainScreen){
-            System.out.println("kuku");
-        }
-    }
     private void find(){
         Param param = new Param();
         param.addParameter(ParamName.RESPONSE, (EventHandler)this::getResult);
