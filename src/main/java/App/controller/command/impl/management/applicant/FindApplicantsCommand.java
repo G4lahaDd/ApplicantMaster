@@ -1,8 +1,8 @@
-package App.controller.command.impl;
+package App.controller.command.impl.management.applicant;
 
-import App.controller.command.Command;
 import App.controller.command.Param;
 import App.controller.command.ParamName;
+import App.controller.command.RemoteCommand;
 import App.controller.command.exception.CommandException;
 import App.model.entity.Applicant;
 import App.model.service.ApplicantService;
@@ -12,11 +12,11 @@ import javafx.event.EventHandler;
 
 import java.util.List;
 
-public class FindApplicantsCommand implements Command {
+public class FindApplicantsCommand extends RemoteCommand {
     private static final ApplicantService service = ApplicantService.getInstance();
 
     @Override
-    public void execute(Param params) throws CommandException {
+    public void executeRemote(Param params) throws CommandException, ServiceException{
         StringBuilder sql_filter = new StringBuilder();
         try {
             String surname = (String) params.getParameter(ParamName.SURNAME);
@@ -56,8 +56,6 @@ public class FindApplicantsCommand implements Command {
         } catch (ClassCastException ex) {
             System.out.println("class cast exception while get params in find applicants command");
             throw new CommandException("class cast exception while get params in find applicants command");
-        } catch (ServiceException ex) {
-            throw new CommandException(ex.getMessage());
         }
     }
 }

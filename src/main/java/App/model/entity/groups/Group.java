@@ -9,6 +9,10 @@ public class Group {
     private String code;
     private List<Applicant> applicants;
 
+    public Group(String code){
+        this.code = code;
+    }
+
     public String getCode() {
         return code;
     }

@@ -1,12 +1,10 @@
 package App.view;
 
-import App.model.entity.Applicant;
+import App.controller.Controller;
+import App.controller.command.Param;
+import App.controller.command.ParamName;
 import App.model.entity.Faculty;
-import App.model.entity.Specialization;
-import App.model.entity.groups.Group;
-import App.model.service.ApplicationDataService;
 import App.view.controls.*;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,15 +13,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +40,16 @@ public class MainScreen extends GridPane implements Window, Initializable {
     @FXML
     private AnchorPane contentPane;
 
+    private static final Controller controller = Controller.getInstance();
     private static Stage mainWindow = null;
     private List<Faculty> faculties;
 
     private Map<String, Node> pages;
 
     public MainScreen(){
-        Main.setCurrentWindow(this);
+        Param param = new Param();
+        param.addParameter(ParamName.WINDOW, this);
+        Controller.getInstance().doCommand("set-current-window", param);
         load();
     }
 
@@ -146,7 +144,9 @@ public class MainScreen extends GridPane implements Window, Initializable {
     }
 
     private void successLogin(){
-        faculties = ApplicationDataService.getInstance().getFaculties();
+        Param returnParam = new Param();
+        controller.doCommand("load-faculties",returnParam);
+        faculties = (List<Faculty>)returnParam.getParameter(ParamName.RETURN);
         FacultyPane facultyPane = fitPage(new FacultyPane(faculties));
         Node node = pages.get(PagesName.FACULTIES);
         node.setVisible(false);

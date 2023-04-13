@@ -3,9 +3,12 @@ package App.model.dao;
 import App.model.dao.exception.DaoException;
 import App.model.entity.User;
 import App.model.service.DBService;
-import App.model.service.exception.ServiceException;
+import App.model.service.exception.NoConnectionException;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDao {
     private static final String SQL_GET_USER = "SELECT * FROM users WHERE login = ?";
@@ -21,7 +24,7 @@ public class UserDao {
         return INSTANCE;
     }
 
-    public User getUser(String login) throws DaoException{
+    public User getUser(String login) throws DaoException, NoConnectionException {
         try(
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_GET_USER);
@@ -38,7 +41,7 @@ public class UserDao {
                 return user;
             }
             else return null;
-        }catch (SQLException | ServiceException ex){
+        }catch (SQLException ex){
             System.out.println("Error while get user: " + ex.getMessage());
             throw new DaoException("Error while get user, login = " + login);
         }

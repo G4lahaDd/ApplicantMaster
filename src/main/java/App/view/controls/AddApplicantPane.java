@@ -7,14 +7,10 @@ import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
 import App.model.entity.Subject;
-import App.model.service.ApplicationDataService;
 import App.view.Exception.EmptyFieldException;
-import App.view.Main;
-import App.view.MainScreen;
 import App.view.MessageBox;
 import App.view.Parser;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -23,21 +19,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
@@ -75,6 +65,7 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
     @FXML
     private Button addButton;
 
+    private static final Controller controller = Controller.getInstance();
     private List<Faculty> faculties;
     private Faculty selectedFaculty;
     private Applicant applicant;
@@ -101,7 +92,9 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
     }
 
     private void loadData() {
-        faculties = ApplicationDataService.getInstance().getFaculties();
+        Param returnParam = new Param();
+        controller.doCommand("load-faculties",returnParam);
+        faculties = (List<Faculty>)returnParam.getParameter(ParamName.RETURN);
         ObservableList<String> facultiesAbbr = FXCollections.observableArrayList();
         for (Faculty faculty : faculties) {
             facultiesAbbr.add(faculty.getAbbreviation());

@@ -6,10 +6,7 @@ import App.controller.command.ParamName;
 import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
-import App.model.service.ApplicationDataService;
 import App.view.ConfirmBox;
-import App.view.EditApplicantWindow;
-import App.view.MainScreen;
 import App.view.MessageBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,18 +15,12 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -51,6 +42,8 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
     private TextField queryField;
     @FXML
     private CheckBox isPaidCheck;
+
+    private static final Controller controller = Controller.getInstance();
 
     private ObservableList<String> facultiesAbbr;
     private ObservableList<String> specCodes;
@@ -77,7 +70,9 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        faculties = ApplicationDataService.getInstance().getFaculties();
+        Param returnParam = new Param();
+        controller.doCommand("load-faculties",returnParam);
+        faculties = (List<Faculty>)returnParam.getParameter(ParamName.RETURN);
         applicantsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         facultiesAbbr = FXCollections.observableArrayList();

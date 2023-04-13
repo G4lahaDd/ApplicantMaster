@@ -2,24 +2,20 @@ package App.model.service;
 
 import App.model.entity.Faculty;
 import App.model.entity.User;
+import App.model.entity.groups.FacultyThread;
 import App.model.service.exception.ServiceException;
-import App.view.Main;
-import App.view.MainScreen;
-import App.view.controls.SpecializationPane;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import App.view.Window;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class ApplicationDataService {
     private List<Faculty> faculties;
+    private List<FacultyThread> facultyThreads;
+    private Window currentWindow;
+    private Thread loadThread;
     private User user;
+
+
     private static final ApplicationDataService INSTANCE = new ApplicationDataService();
     private ApplicationDataService(){}
 
@@ -49,12 +45,40 @@ public class ApplicationDataService {
         else return false;
     }
 
+    public void removeFaculty(Faculty faculty){
+        faculties.remove(faculty);
+    }
+
     public List<Faculty> getFaculties() {
         return faculties;
+    }
+
+    public List<FacultyThread> getFacultyThreads() {
+        return facultyThreads;
+    }
+
+    public void setFacultyThreads(List<FacultyThread> facultyThreads) {
+        this.facultyThreads = facultyThreads;
     }
 
     public Faculty getFacultyById(Integer id){
         return faculties.stream().filter(x -> x.getId()
                 .equals(id)).findFirst().get();
+    }
+
+    public Thread getLoadThread() {
+        return loadThread;
+    }
+
+    public void setLoadThread(Thread loadThread) {
+        this.loadThread = loadThread;
+    }
+
+    public Window getCurrentWindow() {
+        return currentWindow;
+    }
+
+    public void setCurrentWindow(Window currentWindow) {
+        this.currentWindow = currentWindow;
     }
 }

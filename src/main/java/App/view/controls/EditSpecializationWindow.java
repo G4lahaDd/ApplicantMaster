@@ -1,25 +1,21 @@
 package App.view.controls;
 
+import App.controller.Controller;
 import App.controller.command.Container;
-import App.controller.command.Delegate;
 import App.model.entity.Specialization;
 import App.model.entity.Subject;
-import App.view.Main;
 import App.view.MainScreen;
 import App.view.MessageBox;
-import javafx.beans.value.ObservableListValue;
+import App.view.Window;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -27,8 +23,7 @@ import javafx.stage.Stage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ResourceBundle;
 
 public class EditSpecializationWindow implements Initializable {
     private Container<Specialization> specialization;
@@ -53,6 +48,7 @@ public class EditSpecializationWindow implements Initializable {
     @FXML
     private Button closeButton;
 
+    private static final Controller controller = Controller.getInstance();
 
     private static final ObservableList<Subject> subjects = FXCollections.observableArrayList(Subject.values());
 
@@ -88,7 +84,10 @@ public class EditSpecializationWindow implements Initializable {
             stage.setScene(scene);
             stage.setTitle("Edit specialization");
 
-            stage.initOwner(Main.getCurrentWindow().getStage());
+            Window window = (Window)controller.doReturnCommand("get-current-window");
+            Stage InitWindow = window.getStage();
+
+            stage.initOwner(InitWindow);
             stage.initModality(Modality.WINDOW_MODAL);
 
             update();

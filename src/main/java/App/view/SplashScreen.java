@@ -1,11 +1,11 @@
 package App.view;
 
 import App.controller.Controller;
-import javafx.event.EventHandler;
+import App.controller.command.Param;
+import App.controller.command.ParamName;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.util.Timer;
@@ -23,6 +23,7 @@ public class SplashScreen implements Window {
         scene.getStylesheets().add(SplashScreen.class.getResource("style/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest( e -> { System.exit(0);});
         splashWindow = stage;
         }
         catch (Exception ex){
@@ -39,7 +40,9 @@ public class SplashScreen implements Window {
         };
         timer = new Timer();
         timer.schedule(exitTask,60000);
-        Main.setCurrentWindow(this);
+        Param param = new Param();
+        param.addParameter(ParamName.WINDOW, this);
+        Controller.getInstance().doCommand("set-current-window", param);
     }
 
     @Override

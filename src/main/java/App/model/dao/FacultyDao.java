@@ -2,9 +2,8 @@ package App.model.dao;
 
 import App.model.dao.exception.DaoException;
 import App.model.entity.Faculty;
-import App.model.entity.Specialization;
 import App.model.service.DBService;
-import App.model.service.exception.ServiceException;
+import App.model.service.exception.NoConnectionException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class FacultyDao {
     private static final String SQL_GET_BY_ID_FACULTY = "SELECT * FROM faculty " +
             "WHERE id = ?";
     private static final String SQL_GET_ALL_FACULTY = "SELECT * FROM faculty";
-    private static final String SQL_ADD_FACULTY = "INSERT INTO faculty VALUES(?, ?, ?)";
+    private static final String SQL_ADD_FACULTY = "INSERT INTO faculty (name, abbr, group_code) VALUES (?, ?, ?)";
     private static final String SQL_UPDATE_FACULTY = "UPDATE faculty " +
             "SET name = ?, abbr = ?, group_code = ? " +
             "WHERE id = ?";
@@ -26,7 +25,7 @@ public class FacultyDao {
 
     private FacultyDao(){}
 
-    public Faculty getFacultyById(int id) throws DaoException {
+    public Faculty getFacultyById(int id) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_GET_BY_ID_FACULTY);
@@ -36,13 +35,13 @@ public class FacultyDao {
             if (resultSet.next()) {
                 return createFaculty(resultSet);
             }
-        } catch (SQLException | ServiceException ex) {
+        } catch (SQLException ex) {
             throw new DaoException("Error while get faculty by id");
         }
         return null;
     }
 
-    public List<Faculty> getAllFaculty() throws DaoException {
+    public List<Faculty> getAllFaculty() throws DaoException, NoConnectionException {
         List<Faculty> result = new ArrayList<>();
         try (
                 Connection connection = db.getConnection();
@@ -52,14 +51,14 @@ public class FacultyDao {
             while (resultSet.next()) {
                 result.add(createFaculty(resultSet));
             }
-        } catch (SQLException | ServiceException ex) {
+        } catch (SQLException ex) {
             System.out.println("Error while get all faculties: " + ex.getMessage());
             throw new DaoException("Error while get all faculties");
         }
         return result;
     }
 
-    public int addFaculty(Faculty faculty) throws DaoException {
+    public void addFaculty(Faculty faculty) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_ADD_FACULTY, Statement.RETURN_GENERATED_KEYS);
@@ -67,23 +66,19 @@ public class FacultyDao {
             statement.setString(1, faculty.getName());
             statement.setString(2, faculty.getAbbreviation());
             statement.setInt(3, faculty.getGroupCode());
-            ResultSet resultSet = statement.executeQuery();
+            statement.executeUpdate();
+            ResultSet resultSet = statement.getGeneratedKeys();
             if (resultSet.next()) {
                 faculty.setId(resultSet.getInt(1));
-                for (Specialization spec : faculty.getSpecializations()) {
-                    specializationDao.addSpecialization(spec, faculty.getId());
-                }
-                return 1;
             }
-        } catch (SQLException | ServiceException ex) {
-            System.out.println("Error while add faculty: " + faculty.toString());
-            throw new DaoException("Error while add faculty");
+        } catch (SQLException ex) {
+            System.out.println("DAO: Error while add faculty: " + ex.getMessage());
+            throw new DaoException("Error while add faculty \n\t" + ex.getMessage());
         }
-        return -1;
 
     }
 
-    public int updateFaculty(Faculty faculty) throws DaoException {
+    public void updateFaculty(Faculty faculty) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_FACULTY);
@@ -93,34 +88,26 @@ public class FacultyDao {
             statement.setInt(3, faculty.getGroupCode());
             statement.setInt(4, faculty.getId());
 
-            for (Specialization spec : faculty.getSpecializations()) {
-                if (specializationDao.hasSpecialization(spec, faculty.getId())) {
-                    specializationDao.updateSpecialization(spec);
-                } else {
-                    specializationDao.addSpecialization(spec, faculty.getId());
-                }
-            }
-            return 1;
-        } catch (SQLException | ServiceException ex) {
+        } catch (SQLException ex) {
             System.out.println("Error while update faculty: " + faculty.toString());
             throw new DaoException("Error while update faculty");
         }
     }
 
-    public int deleteFaculty(int id) throws DaoException {
+    public int deleteFaculty(int id) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_DELETE_FACULTY);
         ) {
             statement.setInt(1, id);
             return statement.executeUpdate();
-        } catch (SQLException | ServiceException ex) {
+        } catch (SQLException ex) {
             System.out.println("Error while delete faculty" + ex.getMessage());
             throw new DaoException("Error while delete faculty");
         }
     }
 
-    private Faculty createFaculty(ResultSet resultSet) throws SQLException, DaoException {
+    private Faculty createFaculty(ResultSet resultSet) throws SQLException, DaoException, NoConnectionException {
         Faculty faculty = new Faculty();
         faculty.setId(resultSet.getInt(1));
         faculty.setName(resultSet.getString(2));

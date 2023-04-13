@@ -10,5 +10,9 @@ public enum ParamName {
     SURNAME,
     NAME,
     PATRONYMIC,
-    IS_PAID
+    IS_PAID,
+    FILE,
+    BOOL_CONTAINER,
+    RETURN,
+    WINDOW
 }

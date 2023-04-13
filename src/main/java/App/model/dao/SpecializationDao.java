@@ -1,11 +1,10 @@
 package App.model.dao;
 
 import App.model.dao.exception.DaoException;
-import App.model.entity.Faculty;
-import App.model.entity.Subject;
 import App.model.entity.Specialization;
+import App.model.entity.Subject;
 import App.model.service.DBService;
-import App.model.service.exception.ServiceException;
+import App.model.service.exception.NoConnectionException;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public class SpecializationDao {
             "Select * " +
                     "FROM specializations WHERE faculty_id = ?";
     private static final String SQL_ADD_SPECIALIZATION =
-            "INSERT INTO specializations VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            "INSERT INTO specializations (faculty_id, name, code, budged_places, paid_places, first_subj, second_subj, group_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SQL_HAS_SPECIALIZATION =
             "SELECT * FROM specializations " +
                     "WHERE faculty_id = ? AND code = ?";
@@ -32,7 +31,7 @@ public class SpecializationDao {
     private static final SpecializationDao INSTANCE = new SpecializationDao();
     private final DBService db = DBService.getInstance();
 
-    public List<Specialization> getAllFacultySpecialization(int facultyId) throws DaoException {
+    public List<Specialization> getAllFacultySpecialization(int facultyId) throws DaoException, NoConnectionException {
         List<Specialization> specializations = new ArrayList<>();
         try(
                 Connection connection = db.getConnection();
@@ -43,13 +42,13 @@ public class SpecializationDao {
             while(resultSet.next()){
                 specializations.add(createSpecialization(resultSet));
             }
-        }catch(SQLException | ServiceException ex){
-            throw new DaoException("Error while get faculty specializations");
+        }catch(SQLException ex){
+            throw new DaoException("DAO: Error while get faculty specializations " + ex.getMessage());
         }
         return specializations;
     }
 
-    public int addSpecialization(Specialization specialization, int facultyId) throws DaoException{
+    public int addSpecialization(Specialization specialization, int facultyId) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_ADD_SPECIALIZATION,
@@ -63,19 +62,20 @@ public class SpecializationDao {
             statement.setInt(6,specialization.getFirstSubject().getCode());
             statement.setInt(7,specialization.getSecondSubject().getCode());
             statement.setInt(8,specialization.getGroupCode());
-            ResultSet resultSet = statement.executeQuery();
+            statement.executeUpdate();
+            ResultSet resultSet = statement.getGeneratedKeys();
             if(resultSet.next()){
                 specialization.setId(resultSet.getInt(1));
                 return 1;
             }
-        }catch(SQLException | ServiceException ex){
+        }catch(SQLException ex){
             System.out.println("Error while add specialization: " + specialization.toString());
             throw new DaoException("Error while add specialization: " + specialization.toString());
         }
         return -1;
     }
 
-    public boolean hasSpecialization(Specialization specialization, int facultyId) throws DaoException{
+    public boolean hasSpecialization(Specialization specialization, int facultyId) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_HAS_SPECIALIZATION);
@@ -86,14 +86,14 @@ public class SpecializationDao {
             if(resultSet.next()){
                 return true;
             }
-        }catch(SQLException | ServiceException ex){
+        }catch(SQLException ex){
             System.out.println("Error while check specialization: " + ex.getMessage());
             throw new DaoException("Error while check specialization: " + ex.getMessage());
         }
         return false;
     }
 
-    public int updateSpecialization(Specialization specialization) throws DaoException{
+    public int updateSpecialization(Specialization specialization) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_SPECIALIZATION);
@@ -107,20 +107,20 @@ public class SpecializationDao {
             statement.setInt(7,specialization.getGroupCode());
             statement.setInt(8,specialization.getId());
             return statement.executeUpdate();
-        }catch(SQLException | ServiceException ex){
+        }catch(SQLException ex){
             System.out.println("Error while add specialization: " + specialization.toString());
             throw new DaoException("Error while add specialization: " + specialization.toString());
         }
     }
 
-    public int deleteSpecialization(int id) throws DaoException{
+    public int deleteSpecialization(int id) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
                 PreparedStatement statement = connection.prepareStatement(SQL_DELETE_SPECIALIZATION);
         ){
             statement.setInt(1, id);
             return statement.executeUpdate();
-        }catch(SQLException | ServiceException ex){
+        }catch(SQLException ex){
             System.out.println("Error while delete specialization" + ex.getMessage());
             throw new DaoException("Error while delete specialization");
         }

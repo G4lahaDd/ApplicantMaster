@@ -1,15 +1,17 @@
 package App.view.controls;
 
+import App.controller.Controller;
+import App.controller.command.Param;
+import App.controller.command.ParamName;
 import App.model.entity.Applicant;
-import App.model.entity.Faculty;
-import App.model.entity.Specialization;
 import App.model.entity.groups.FacultyThread;
 import App.model.entity.groups.Group;
 import App.model.entity.groups.SpecializationThread;
-import App.model.service.ApplicationDataService;
+import App.view.MessageBox;
+import App.view.Window;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -19,11 +21,12 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -41,6 +44,8 @@ public class GroupPane extends GridPane implements Initializable {
     private ListView<StudentTableRow> groupView;
     @FXML
     private VBox groupsList;
+
+    public static final Controller controller = Controller.getInstance();
 
     private List<FacultyThread> faculties;
     private ObservableList<String> facultiesAbbr;
@@ -72,50 +77,45 @@ public class GroupPane extends GridPane implements Initializable {
         facultyChoice.setOnAction(EventHandler -> selectFaculty());
         specializationChoice.setValue("Специальность");
         specializationChoice.setDisable(true);
-        specializationChoice.setOnAction(EventHandler->selectSpecialization());
+        specializationChoice.setOnAction(EventHandler -> selectSpecialization());
 
         createButton.setOnAction(EventHandler -> createGroups());
         exportButton.setOnAction(EventHandler -> exportGroups());
         exportButton.setDisable(true);
+
+        facultiesAbbr = FXCollections.observableArrayList();
+        facultyChoice.setItems(facultiesAbbr);
     }
 
-    private void createGroups(){
+    private void createGroups() {
+            Param returnParam = new Param();
+            controller.doCommand("create-groups", returnParam);
+            faculties = (List<FacultyThread>)returnParam.getParameter(ParamName.RETURN);
+            facultiesAbbr.clear();
+            for (FacultyThread th : faculties) {
+                facultiesAbbr.add(th.getAbbreviation());
+            }
+            facultyChoice.setItems(facultiesAbbr);
+            facultyChoice.setDisable(false);
+            exportButton.setDisable(false);
+    }
 
-        //TEST
-        Faculty faculty = ApplicationDataService.getInstance().getFaculties().get(1);
-        FacultyThread fth = new FacultyThread(faculty);
-
-        Group group = new Group();
-        group.setCode("10702320");
-        Applicant applicant = new Applicant();
-        group.addApplicant(applicant);
-        applicant.setName("Ilya");
-        applicant.setSurname("Kazyro");
-        applicant.setPatronymic("Alexandrovich");
-        applicant.setBirthday(LocalDate.of(2003,4,30));
-        applicant.setOnPaidBase(false);
-        applicant.setLanguagePoints(48);
-        applicant.setSchoolMark(90);
-        applicant.setFirstSubjPoints(96);
-        applicant.setSecondSubjPoints(85);
-
-        for (Specialization spec : faculty.getSpecializations()) {
-            SpecializationThread spth = new SpecializationThread(spec);
-            fth.getSpecializations().add(spth);
-            spth.getGroups().add(group);
+    private void exportGroups() {
+        Window window = (Window)controller.doReturnCommand("get-current-window");
+        Stage thisWindow = window.getStage();
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Экспорт списков групп");
+        File directory = directoryChooser.showDialog(thisWindow);
+        if(!directory.exists()) {
+            new MessageBox("Директория не выбрана");
+            return;
         }
-        facultyChoice.getItems().add(fth.getAbbreviation());
-        faculties = new ArrayList<>();
-        faculties.add(fth);
-        facultyChoice.setDisable(false);
-        //TEST
-        exportButton.setDisable(false);
+        System.out.println(directory);
+        Param params = new Param();
+        params.addParameter(ParamName.FILE, directory);
+        Controller.getInstance().doCommand("export", params);
     }
 
-    private void exportGroups(){
-
-    }
-    
     private void selectFaculty() {
         ObservableList<String> specializations = specializationChoice.getItems();
         specializations.clear();
@@ -161,13 +161,12 @@ public class GroupPane extends GridPane implements Initializable {
         Group group = (Group) object;
         ObservableList<StudentTableRow> students = groupView.getItems();
         students.clear();
-        if(selectedGroup == group)
-        {
+        if (selectedGroup == group) {
             selectedGroup = null;
             return;
         }
         selectedGroup = group;
-        for (Applicant applicant : group.getApplicants()){
+        for (Applicant applicant : group.getApplicants()) {
             StudentTableRow row = new StudentTableRow(applicant);
             row.prefWidthProperty().bind(groupView.widthProperty().subtract(25));
             students.add(row);
