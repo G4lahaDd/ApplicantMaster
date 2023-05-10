@@ -7,13 +7,22 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+/**
+ * Класс для соединения с базой данных
+ * Класс переопределяет методы закрытия соединения для его повторного использования
+ * Это позволяет ускорить выполнение запросов, т.к. не требуется тратить ресурсы
+ * на открытие нового соединения, что является время- и ресурсозатратной задачей
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 class ProxyConnection implements Connection {
     private final Connection connection;
 
     /**
-     * Instantiates a new Proxy connection.
+     * Создаёт прокси-подключение на основе готового подключения
      *
-     * @param connection the connection
+     * @param connection Обычное подключение
      */
     ProxyConnection(Connection connection) {
         this.connection = connection;
@@ -61,7 +70,7 @@ class ProxyConnection implements Connection {
 
     @Override
     public void close() {
-        System.out.println("i don't wanna close");
+        System.out.println("Connection close canceled");
     }
 
     /**

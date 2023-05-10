@@ -1,6 +1,13 @@
 package App.controller.command.exception;
 
+/**
+ * Исключение возникающее при выполнении команды
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class CommandException extends Exception{
+
     public CommandException(String message){
         super(message);
     }

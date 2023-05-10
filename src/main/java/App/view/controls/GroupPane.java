@@ -31,19 +31,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * Класс, описывающий панель для отображения групп
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class GroupPane extends GridPane implements Initializable {
+    //region Компоненты
     @FXML
-    private Button createButton;
+    private Button btnCreate;
     @FXML
-    private Button exportButton;
+    private Button btnExport;
     @FXML
-    private ChoiceBox<String> facultyChoice;
+    private ChoiceBox<String> chbFaculty;
     @FXML
-    private ChoiceBox<String> specializationChoice;
+    private ChoiceBox<String> chbSpecialization;
     @FXML
     private ListView<StudentTableRow> groupView;
     @FXML
-    private VBox groupsList;
+    private VBox boxGroupsList;
+    //endregion
 
     public static final Controller controller = Controller.getInstance();
 
@@ -53,11 +61,17 @@ public class GroupPane extends GridPane implements Initializable {
     private SpecializationThread selectedSpecialization;
     private Group selectedGroup;
 
+    /**
+     * Конструктор инициализирующий панель для групп
+     */
     public GroupPane() {
         super();
         load();
     }
 
+    /**
+     * Загрузка графических компонентов из ресурсов
+     */
     private void load() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("GroupsPane.fxml"));
@@ -69,96 +83,126 @@ public class GroupPane extends GridPane implements Initializable {
         }
     }
 
-
+    /**
+     * Инициализация графических компонентов панели
+     *
+     * @param url            Путь к ресурсу с компонентами
+     * @param resourceBundle Набор данных необходимых для компонента
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        facultyChoice.setValue("Факультет");
-        facultyChoice.setDisable(true);
-        facultyChoice.setOnAction(EventHandler -> selectFaculty());
-        specializationChoice.setValue("Специальность");
-        specializationChoice.setDisable(true);
-        specializationChoice.setOnAction(EventHandler -> selectSpecialization());
+        chbFaculty.setValue("Факультет");
+        chbFaculty.setDisable(true);
+        chbFaculty.setOnAction(EventHandler -> selectFaculty());
+        chbSpecialization.setValue("Специальность");
+        chbSpecialization.setDisable(true);
+        chbSpecialization.setOnAction(EventHandler -> selectSpecialization());
 
-        createButton.setOnAction(EventHandler -> createGroups());
-        exportButton.setOnAction(EventHandler -> exportGroups());
-        exportButton.setDisable(true);
+        btnCreate.setOnAction(EventHandler -> createGroups());
+        btnExport.setOnAction(EventHandler -> exportGroups());
+        btnExport.setDisable(true);
 
         facultiesAbbr = FXCollections.observableArrayList();
-        facultyChoice.setItems(facultiesAbbr);
+        chbFaculty.setItems(facultiesAbbr);
     }
 
+    /**
+     * Создание групп
+     */
     private void createGroups() {
-            Param returnParam = new Param();
-            controller.doCommand("create-groups", returnParam);
-            faculties = (List<FacultyThread>)returnParam.getParameter(ParamName.RETURN);
-            facultiesAbbr.clear();
-            for (FacultyThread th : faculties) {
-                facultiesAbbr.add(th.getAbbreviation());
-            }
-            facultyChoice.setItems(facultiesAbbr);
-            facultyChoice.setDisable(false);
-            exportButton.setDisable(false);
+        Param returnParam = new Param();
+        controller.doCommand("create-groups", returnParam);
+        //Получение потоков студентов
+        faculties = (List<FacultyThread>) returnParam.getParameter(ParamName.RETURN);
+        facultiesAbbr.clear();
+        for (FacultyThread th : faculties) {
+            facultiesAbbr.add(th.getAbbreviation());
+        }
+        chbFaculty.setItems(facultiesAbbr);
+        chbFaculty.setDisable(false);
+        btnExport.setDisable(false);
     }
 
+    /**
+     * Экпорт групп в Excel формат
+     */
     private void exportGroups() {
-        Window window = (Window)controller.doReturnCommand("get-current-window");
+        //Получение текущего окна
+        Window window = (Window) controller.doReturnCommand("get-current-window");
         Stage thisWindow = window.getStage();
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Экспорт списков групп");
+        //Выбор директории для сохранения
         File directory = directoryChooser.showDialog(thisWindow);
-        if(!directory.exists()) {
+        if (directory == null) return;
+        if (!directory.exists()) {
             new MessageBox("Директория не выбрана");
             return;
         }
         System.out.println(directory);
+        //Вызов экспорта в Excel
         Param params = new Param();
         params.addParameter(ParamName.FILE, directory);
         Controller.getInstance().doCommand("export", params);
     }
 
+    /**
+     * Выбор факультета
+     */
     private void selectFaculty() {
-        ObservableList<String> specializations = specializationChoice.getItems();
+        ObservableList<String> specializations = chbSpecialization.getItems();
         specializations.clear();
-        specializationChoice.setValue("Специальность");
+        chbSpecialization.setValue("Специальность");
 
-        String abbr = facultyChoice.getValue();
+        //Поиск выбранного факультета
+        String abbr = chbFaculty.getValue();
         Optional<FacultyThread> faculty = faculties.stream()
                 .filter(x -> x.getAbbreviation().equals(abbr))
                 .findFirst();
         if (faculty.isEmpty()) {
             selectedFaculty = null;
-            specializationChoice.setDisable(true);
+            chbSpecialization.setDisable(true);
             return;
         }
-        specializationChoice.setDisable(false);
+        chbSpecialization.setDisable(false);
         selectedFaculty = faculty.get();
+        //Обновление списка специальностей
         for (SpecializationThread spec : selectedFaculty.getSpecializations()) {
             specializations.add(spec.getName());
         }
     }
 
+    /**
+     * Выбор специальности
+     */
     private void selectSpecialization() {
-        groupsList.getChildren().clear();
+        boxGroupsList.getChildren().clear();
         selectedGroup = null;
         groupView.getItems().clear();
-        String name = specializationChoice.getValue();
+        //Получение выбранной специальности
+        String name = chbSpecialization.getValue();
         Optional<SpecializationThread> specialization = selectedFaculty
                 .getSpecializations().stream()
                 .filter(x -> x.getName().equals(name)).findFirst();
         if (specialization.isEmpty()) {
             return;
         }
+        //Обновление списка групп
         selectedSpecialization = specialization.get();
         for (Group group : selectedSpecialization.getGroups()) {
-
-            groupsList.getChildren().add(new GroupToggle(group, this::selectGroup));
+            boxGroupsList.getChildren().add(new GroupToggle(group, this::selectGroup));
         }
     }
 
+    /**
+     * Выбор группы
+     * @param event Объект события, содержащий группу
+     */
     private void selectGroup(Event event) {
         Object object = event.getSource();
         if (!(object instanceof Group)) return;
         Group group = (Group) object;
+        //Получение списка студентов
         ObservableList<StudentTableRow> students = groupView.getItems();
         students.clear();
         if (selectedGroup == group) {
@@ -166,6 +210,7 @@ public class GroupPane extends GridPane implements Initializable {
             return;
         }
         selectedGroup = group;
+        //Отображение списка студентов
         for (Applicant applicant : group.getApplicants()) {
             StudentTableRow row = new StudentTableRow(applicant);
             row.prefWidthProperty().bind(groupView.widthProperty().subtract(25));

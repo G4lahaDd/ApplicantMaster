@@ -1,12 +1,8 @@
 package App.view.controls;
 
-import App.controller.Controller;
 import App.controller.command.Container;
-import App.controller.command.Delegate;
-import App.controller.command.Param;
-import App.controller.command.ParamName;
 import App.model.entity.Specialization;
-import App.view.MainScreen;
+import App.view.ConfirmBox;
 import App.view.MessageBox;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -17,49 +13,63 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * Класс, описывающий панель для отображения специальности
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class SpecializationPane extends GridPane implements Initializable{
     private Specialization specialization;
     private static byte[] xml;
+    //region Компоненты
+    @FXML
+    private Label lblSpecializationCode;
+    @FXML
+    private Label lblSpecializationName;
+    @FXML
+    private Label lblBudgetPlaces;
+    @FXML
+    private Label lblPaidPlaces;
+    @FXML
+    private Label lblFirstSubject;
+    @FXML
+    private Label lblSecondSubject;
+    @FXML
+    private Button btnEdit;
+    @FXML
+    private Button btnDelete;
+    //endregion
+    private EventHandler onUpdateMethod;
+    private static EventHandler onDeleteMethod;
 
-    @FXML
-    private Label specializationCode;
-    @FXML
-    private Label specializationName;
-    @FXML
-    private Label budgetPlaces;
-    @FXML
-    private Label paidPlaces;
-    @FXML
-    private Label firstSubject;
-    @FXML
-    private Label secondSubject;
-    @FXML
-    private Button editButton;
-    @FXML
-    private Button deleteButton;
-    private static Delegate onDeleteMethod;
 
-
-
-    public SpecializationPane(Specialization specialization){
+    /**
+     * Конструктор, инициализирующий панель специальности
+     * @param specialization Закреплённая за панелью специальность
+     * @param onUpdateMethod Событие вызываемое при изменении специальности
+     */
+    public SpecializationPane(Specialization specialization, EventHandler onUpdateMethod){
         super();
         load();
         this.specialization = specialization;
+        this.onUpdateMethod = onUpdateMethod;
         update();
     }
 
+    /**
+     * Загрузка графических компонентов из ресурсов
+     */
     private void load(){
         final FXMLLoader loader = new FXMLLoader();
         try {
+            //Если компоненты загружались из ресурсов, повторная загрузка не требуется
             if(xml == null) {
                 xml = getClass().getResource("SpecializationPane.fxml")
                         .openStream()
@@ -73,45 +83,77 @@ public class SpecializationPane extends GridPane implements Initializable{
         }
     }
 
+    /**
+     * Инициализация графических компонентов панели
+     *
+     * @param url            Путь к ресурсу с компонентами
+     * @param resourceBundle Набор данных необходимых для компонента
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        editButton.setOnAction(EventHandler -> edit());
-        deleteButton.setOnAction(EventHandler -> delete());
+        btnEdit.setOnAction(EventHandler -> edit());
+        btnDelete.setOnAction(EventHandler -> delete());
     }
 
+    /**
+     * Обновление текстовый данный на экране
+     */
     private void update(){
         if(specialization == null) return;
-        specializationCode.setText(specialization.getCode());
-        specializationName.setText(specialization.getName());
-        budgetPlaces.setText(specialization.getBudgedPlaces().toString());
-        paidPlaces.setText(specialization.getPaidPlaces().toString());
-        firstSubject.setText(specialization.getFirstSubject().toString());
-        secondSubject.setText(specialization.getSecondSubject().toString());
+        lblSpecializationCode.setText(specialization.getCode());
+        lblSpecializationName.setText(specialization.getName());
+        lblBudgetPlaces.setText(specialization.getBudgedPlaces().toString());
+        lblPaidPlaces.setText(specialization.getPaidPlaces().toString());
+        lblFirstSubject.setText(specialization.getFirstSubject().toString());
+        lblSecondSubject.setText(specialization.getSecondSubject().toString());
+
     }
 
+    /**
+     * Изменение специальности
+     */
     private void edit(){
+        //Создание контейнера для передачи значения по ссылке
         Container<Specialization> specializationContainer = new Container<>(specialization);
+        //Создание окна
         new EditSpecializationWindow(specializationContainer);
+        //Проверка результатов
         if(specializationContainer.isEmpty()) {
             new MessageBox("Ошибка введённых данных");
+            return;
         }
         specialization = specializationContainer.get();
         update();
+        onUpdateMethod.handle(new Event(Event.ANY));
     }
 
+    /**
+     * Удаление специальности
+     */
     private void delete(){
-        if(onDeleteMethod != null) {
-            onDeleteMethod.execute(this);
+        if(!ConfirmBox.Show("Вы уверены что хотите удалить специальность?")){
+            return;
         }
-        Param param = new Param();
+        if(onDeleteMethod != null) {
+            onDeleteMethod.handle(new Event(this, Event.NULL_SOURCE_TARGET, Event.ANY));
+        }
+        /*Param param = new Param();
         param.addParameter(ParamName.SPECIALIZATION, specialization);
-        Controller.getInstance().doCommand("delete-specialization",param);
+        Controller.getInstance().doCommand("delete-specialization",param);*/
     }
 
-    public static void setOnDelete(Delegate onDeleteMethod) {
+    /**
+     * Установление события, вызываемого при удалении специальности
+     * @param onDeleteMethod Событие, вызываемое при удалении специальности
+     */
+    public static void setOnDelete(EventHandler onDeleteMethod) {
         SpecializationPane.onDeleteMethod = onDeleteMethod;
     }
 
+    /**
+     * Получение специальности, закреплённой за панелью
+     * @return Специальность
+     */
     public Specialization getSpecialization(){
         return specialization;
     }

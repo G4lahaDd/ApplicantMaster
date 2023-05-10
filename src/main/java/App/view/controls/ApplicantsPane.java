@@ -25,24 +25,31 @@ import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+/**
+ * Класс, описывающий панель для отображения и поиска абитуриентов
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class ApplicantsPane extends GridPane implements Initializable, Refreshable {
+    //region Компоненты
     @FXML
-    private Button addButton;
+    private Button btnAdd;
     @FXML
-    private Button findButton;
+    private Button btnFind;
     @FXML
-    private Button deleteSelectedButton;
+    private Button btnDeleteSelected;
     @FXML
     private ListView<ApplicantTableRow> applicantsList;
     @FXML
-    private ChoiceBox<String> facultyChoiceBox;
+    private ChoiceBox<String> chbFaculty;
     @FXML
-    private ChoiceBox<String> specChoiceBox;
+    private ChoiceBox<String> chbSpecialization;
     @FXML
-    private TextField queryField;
+    private TextField tfQuery;
     @FXML
-    private CheckBox isPaidCheck;
-
+    private CheckBox chkIsPaid;
+    //endregion
     private static final Controller controller = Controller.getInstance();
 
     private ObservableList<String> facultiesAbbr;
@@ -51,12 +58,19 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
     private Faculty selectedFaculty;
     private Specialization selectedSpecialization;
 
+    /**
+     * Конструктор панели абитуриентов
+     * @param OnOpenAddApplicantPage метод обработки события добавления абитуриента
+     */
     public ApplicantsPane(EventHandler OnOpenAddApplicantPage) {
         super();
         load();
-        addButton.setOnAction(OnOpenAddApplicantPage);
+        btnAdd.setOnAction(OnOpenAddApplicantPage);
     }
 
+    /**
+     * Загрузка компонентов интерфейса из ресурсов
+     */
     private void load() {
         final FXMLLoader loader = new FXMLLoader(getClass().getResource("ApplicantsPane.fxml"));
         try {
@@ -68,51 +82,68 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         }
     }
 
+    /**
+     * Инициализация графических компонентов панели
+     * @param url Путь к ресурсу с компонентами
+     * @param resourceBundle Набор данных необходимых для компонента
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //Загрузка факультетов
         Param returnParam = new Param();
         controller.doCommand("load-faculties",returnParam);
         faculties = (List<Faculty>)returnParam.getParameter(ParamName.RETURN);
         applicantsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
+        //Заполнение списка аббревиатур факультетов
         facultiesAbbr = FXCollections.observableArrayList();
         if (faculties != null)
             for (Faculty faculty : faculties) {
                 facultiesAbbr.add(faculty.getAbbreviation());
             }
         facultiesAbbr.add("Любой");
-        facultyChoiceBox.setOnAction(EventHandler -> selectFaculty());
-        facultyChoiceBox.setItems(facultiesAbbr);
-        facultyChoiceBox.setValue("Любой");
+        chbFaculty.setOnAction(EventHandler -> selectFaculty());
+        chbFaculty.setItems(facultiesAbbr);
+        chbFaculty.setValue("Любой");
 
         updateSpecChoiceBox();
-        specChoiceBox.setOnAction(EventHandler -> selectSpecialization());
+        chbSpecialization.setOnAction(EventHandler -> selectSpecialization());
 
-        findButton.setOnAction(EventHandler -> find());
-        deleteSelectedButton.setOnAction(EventHandler -> deleteSelected());
+        btnFind.setOnAction(EventHandler -> find());
+        btnDeleteSelected.setOnAction(EventHandler -> deleteSelected());
+
+        //Подсказки для поискового поля
+        tfQuery.setPromptText("Фамилия Имя Отчество");
+        tfQuery.setTooltip(new Tooltip("Для пропуска одного из слов используйте символ '%'" +
+                "\nПример: для поиска по имени - \"% Имя\" "));
     }
+
 
     @Override
     public void refresh() {
+        //ОБновление списка аббревиатур факультетов
         facultiesAbbr = FXCollections.observableArrayList();
         if (faculties != null)
             for (Faculty faculty : faculties) {
                 facultiesAbbr.add(faculty.getAbbreviation());
             }
         facultiesAbbr.add("Любой");
-        facultyChoiceBox.setItems(facultiesAbbr);
-        facultyChoiceBox.setValue("Любой");
+        chbFaculty.setItems(facultiesAbbr);
+        chbFaculty.setValue("Любой");
 
         updateSpecChoiceBox();
     }
 
+    /**
+     * Выбор факультета
+     */
     private void selectFaculty() {
-        String abbr = facultyChoiceBox.getValue();
+        String abbr = chbFaculty.getValue();
         if (abbr == null) return;
-        if (abbr.isEmpty() || abbr.equals("Любой")) {
+        if (abbr.isEmpty() || abbr.equals("Любой")) { //Отмена выделения текущего факультета
             selectedFaculty = null;
             updateSpecChoiceBox();
-        } else {
+        } else { //Выбор факультета
             Optional<Faculty> faculty = faculties.stream()
                     .filter(x -> x.getAbbreviation()
                     .equals(abbr)).findFirst();
@@ -121,29 +152,37 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
 
             specCodes = FXCollections.observableArrayList();
             specCodes.add("Любая");
+            //обновление списка специальностей при выборе факультета
             for (Specialization spec : selectedFaculty.getSpecializations()) {
                 specCodes.add(spec.getCode());
             }
-            specChoiceBox.setItems(specCodes);
-            specChoiceBox.setValue("Любая");
+            chbSpecialization.setItems(specCodes);
+            chbSpecialization.setValue("Любая");
         }
     }
 
+    /**
+     * Обновление данных выпадающего списка специальностей
+     */
     private void updateSpecChoiceBox() {
         specCodes = FXCollections.observableArrayList();
         specCodes.add("Любая");
-        specChoiceBox.setItems(specCodes);
-        specChoiceBox.setValue("Любая");
+        chbSpecialization.setItems(specCodes);
+        chbSpecialization.setValue("Любая");
         selectedSpecialization = null;
     }
 
+    /**
+     * Выбор специальности
+     */
     private void selectSpecialization() {
-        String code = specChoiceBox.getValue();
+        String code = chbSpecialization.getValue();
         if(code == null) return;
         if(code.isEmpty() || code.equals("Любая")){
             selectedSpecialization = null;
         }else{
             if(selectedFaculty == null) return;
+            //Поиск выбранной специальности
             Optional<Specialization> specialization = selectedFaculty
                     .getSpecializations().stream()
                     .filter(x -> x.getCode().equals(code))
@@ -153,7 +192,11 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         }
     }
 
+    /**
+     * Поиск абитуриента по введённым фильтрам
+     */
     private void find(){
+        //Добавление параметров для выполнения команды посиска
         Param param = new Param();
         param.addParameter(ParamName.RESPONSE, (EventHandler)this::getResult);
 
@@ -162,7 +205,7 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         if(selectedSpecialization != null)
             param.addParameter(ParamName.SPECIALIZATION, selectedSpecialization.getId());
 
-        String initials = queryField.getText();
+        String initials = tfQuery.getText();
         if(!initials.isEmpty()){
             String[] query = initials.trim().split(" ");
             if(query.length >= 1)
@@ -173,13 +216,17 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
                 param.addParameter(ParamName.PATRONYMIC, query[2]);
         }
 
-        if(isPaidCheck.isSelected()){
+        if(chkIsPaid.isSelected()){
             param.addParameter(ParamName.IS_PAID, true);
         }
 
         Controller.getInstance().doCommand("find-applicants", param);
     }
 
+    /**
+     * Получение результатов поиска абитуриентов
+     * @param event Объект события, который содержит рещультат
+     */
     private void getResult(Event event){
         Object object = event.getSource();
         if(object == null){
@@ -192,12 +239,14 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
                 return;
             }
             List<Applicant> applicants = (List<Applicant>)object;
+
             ObservableList<ApplicantTableRow> items = applicantsList.getItems();
             if(items == null){
                 items = FXCollections.observableArrayList();
                 applicantsList.setItems(items);
             }
             items.clear();
+            //Заполнение списка абитуриентами
             for (int i = 0; i < applicants.size(); i++){
                 ApplicantTableRow row = new ApplicantTableRow(applicants.get(i));
                 row.prefWidthProperty().bind(applicantsList.widthProperty().subtract(25));
@@ -206,17 +255,22 @@ public class ApplicantsPane extends GridPane implements Initializable, Refreshab
         }
     }
 
+    /**
+     * Удаление выбранных абитурентов
+     */
     private void deleteSelected(){
-
         ObservableList<ApplicantTableRow> selection = applicantsList.getSelectionModel().getSelectedItems();
         if(selection.size() == 0) return;
+        //Формирование окна подтверждения действия
         String message = "Вы уверены что хотите удалить " + selection.size();
         if(selection.size() == 1) message += " запись?";
         else if(selection.size() < 5) message += " записи?";
         else message += " записей?";
+        //Подтверждения действия
         if(!ConfirmBox.Show(message)){
             return;
         }
+        //Удаление абитуриентов
         ObservableList<ApplicantTableRow> rows = applicantsList.getItems();
         for(int i = selection.size() - 1; i >= 0; i--){
             selection.get(i).delete();

@@ -3,9 +3,10 @@ package App.view.controls;
 import App.controller.Controller;
 import App.controller.command.Param;
 import App.controller.command.ParamName;
-import App.view.Exception.EmptyFieldException;
+import App.view.exception.EmptyFieldException;
 import App.view.MessageBox;
 import App.view.Parser;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,22 +21,36 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Класс, описывающий панель для входа пользователя в систему
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class LoginPane extends GridPane implements Initializable {
+    //region Компоненты
     @FXML
-    private Button loginButton;
+    private Button btnLogin;
     @FXML
-    private TextField loginField;
+    private TextField tfLogin;
     @FXML
-    private PasswordField passwordField;
+    private PasswordField pfPassword;
+    //endregion
+    private EventHandler onSuccessLogin;
 
-    private EventHandler onLogin;
-
-    public LoginPane(EventHandler onLogin){
+    /**
+     * Конструктор, инициализирующий панель для входа
+     * @param onSuccessLogin Событие, вызываемое при успешном входе
+     */
+    public LoginPane(EventHandler onSuccessLogin){
         super();
         load();
-        this.onLogin = onLogin;
+        this.onSuccessLogin = onSuccessLogin;
     }
 
+    /**
+     * Загрузка графических компонентов из ресурсов
+     */
     private void load(){
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("LoginPane.fxml"));
@@ -47,21 +62,36 @@ public class LoginPane extends GridPane implements Initializable {
         }
     }
 
+    /**
+     * Инициализация графических компонентов панели
+     *
+     * @param url            Путь к ресурсу с компонентами
+     * @param resourceBundle Набор данных необходимых для компонента
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        loginButton.setOnAction(EventHandler -> login());
+        btnLogin.setOnAction(EventHandler -> login());
     }
 
+    /**
+     * Логинация пользователя
+     */
     private void login(){
         try {
-            String login = Parser.getText(loginField);
-            String password = Parser.getText(passwordField);
-
+            String login = Parser.getText(tfLogin);
+            String password = Parser.getText(pfPassword);
+            //Вызов логинации
             Param param = new Param();
             param.addParameter(ParamName.LOGIN, login);
             param.addParameter(ParamName.PASSWORD, password);
-            param.addParameter(ParamName.RESPONSE, onLogin);
             Controller.getInstance().doCommand("login", param);
+            //Получение результата
+            Boolean result = (Boolean) param.getParameter(ParamName.RETURN);
+            if(result){
+                onSuccessLogin.handle(new Event(Event.ANY));
+            }else{
+                new MessageBox("Неверное имя пользователя или пароль");
+            }
         }catch (EmptyFieldException ex){
             new MessageBox("Введите логин и пароль");
         }

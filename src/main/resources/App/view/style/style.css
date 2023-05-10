@@ -186,21 +186,27 @@
 }
 
 .check-box .box{
+ -fx-background-image: url("icons/Budget.png");
+ -fx-background-repeat: no-repeat;
+ -fx-background-position: 25%;
+ -fx-background-size: 120%;
  -fx-border-color: #008b5e;
  -fx-border-radius: 9px;
  -fx-background-color: transparent;
 }
 
 .check-box:selected .box{
- -fx-background-color: #008b5e;
+ -fx-background-image: url("icons/Paid.png");
+ -fx-background-repeat: no-repeat;
+ -fx-background-position: center;
  -fx-background-radius: 9px;
 }
 
 .check-box:selected .mark{
  -fx-background-image: null;
- -fx-background-color: #008b5e;
  -fx-shape: "M0,0";
 }
+
 
 .date-picker .arrow-button{
  -fx-background-radius: 0 9 9 0;
@@ -290,11 +296,12 @@
  -fx-border-color: #008b5e;
  -fx-border-width: 1;
 }
+
 .list-cell .label{
  -fx-text-fill: black;
 }
 
-.menu-button{
+.filter-menu{
  -fx-background-color: #008b5e;
  -fx-background-image: url("icons/Filter.png");
  -fx-background-repeat: no-repeat;
@@ -304,15 +311,22 @@
  -fx-padding: 2 9 2 9;
 }
 
-.menu-button .arrow-button {
+.filter-menu .arrow-button {
  -fx-padding: 0;
 }
 
-.menu-button .arrow-button .arrow {
+.filter-menu .arrow-button .arrow {
  -fx-padding: 0;
 }
 
 .root {
  -fx-background-color: white;
 }
+
+.warning-label{
+ -fx-font-size: 18px;
+ -fx-text-fill: #efa237;
+ -fx-font-weight: bold;
+}
+
 

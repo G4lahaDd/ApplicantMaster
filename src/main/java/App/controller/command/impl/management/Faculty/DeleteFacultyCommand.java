@@ -9,6 +9,12 @@ import App.model.service.ApplicationDataService;
 import App.model.service.FacultyService;
 import App.model.service.exception.ServiceException;
 
+/**
+ * Команда для удаления факультета
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class DeleteFacultyCommand extends RemoteCommand {
     private static final FacultyService service = FacultyService.getInstance();
 

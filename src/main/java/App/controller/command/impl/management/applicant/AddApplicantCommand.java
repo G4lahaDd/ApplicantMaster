@@ -9,6 +9,12 @@ import App.model.service.ApplicantService;
 import App.model.service.exception.ServiceException;
 import App.view.MessageBox;
 
+/**
+ * Команда для добавления абитуриента
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class AddApplicantCommand extends RemoteCommand {
     private static final ApplicantService service = ApplicantService.getInstance();
 

@@ -12,7 +12,16 @@ import App.model.service.validator.Validator;
 
 import java.util.List;
 
+/**
+ * Класс бизнес логики для факультета
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class FacultyService {
+    /**
+     * Единственный экземпляр класса
+     */
     private static final FacultyService INSTANCE = new FacultyService();
     private static final FacultyDao facultyDao = FacultyDao.getInstance();
     private static final SpecializationDao specializationDao = SpecializationDao.getInstance();
@@ -22,10 +31,19 @@ public class FacultyService {
     private FacultyService() {
     }
 
+    /**
+     * Возвращает единственный экземпляр класса
+     * @return Единственный экземпляр класса
+     */
     public static FacultyService getInstance() {
         return INSTANCE;
     }
 
+    /**
+     * Возвращает все факультеты
+     * @return список факультетов
+     * @throws ServiceException ошибка выполнения или ошибка сети
+     */
     public List<Faculty> getAllFaculties() throws ServiceException {
         try {
             return facultyDao.getAllFaculty();
@@ -35,11 +53,18 @@ public class FacultyService {
         }
     }
 
+    /**
+     * Добавление факультета
+     * @param faculty Факультет для добавления
+     * @return true - если успешно, иначе false
+     * @throws ServiceException ошибка выполнения или ошибка сети
+     */
     public boolean addFaculty(Faculty faculty) throws ServiceException {
         try {
             if (validator.isValid(faculty)) {
                 facultyDao.addFaculty(faculty);
                 if (faculty.getId() != null) {
+                    //Добавление всех специальностей
                     for (Specialization spec : faculty.getSpecializations()) {
                         if (specializationvValidator.isValid(spec)) {
                             specializationDao.addSpecialization(spec, faculty.getId());
@@ -58,15 +83,30 @@ public class FacultyService {
         }
     }
 
+    /**
+     * Обновление данных факультета
+     * @param faculty Факультет для обновления
+     * @return true - если успешно, иначе false
+     * @throws ServiceException ошибка выполнения или ошибка сети
+     */
     public boolean updateFaculty(Faculty faculty) throws ServiceException {
         try {
             if (!validator.isValid(faculty)) return false;
             facultyDao.updateFaculty(faculty);
+            List<Specialization> oldSpecializations= specializationDao.getAllFacultySpecialization(faculty.getId());
+            //Поиск специальностей которые были удалены
+            for(Specialization spec : oldSpecializations){
+                if(hasSpecialization(faculty.getSpecializations(), spec) < 0){
+                    specializationDao.deleteSpecialization(spec.getId());
+                }
+            }
+            //Поиск новых специальностей
             for (Specialization spec : faculty.getSpecializations()) {
                 if (specializationvValidator.isValid(spec)) {
-                    if (specializationDao.hasSpecialization(spec, faculty.getId())) {
+                    if (hasSpecialization(oldSpecializations, spec) >= 0) {
                         specializationDao.updateSpecialization(spec);
                     } else {
+                        System.out.println("add specialization: " + spec.getCode());
                         specializationDao.addSpecialization(spec, faculty.getId());
                     }
                 } else {
@@ -80,6 +120,28 @@ public class FacultyService {
         }
     }
 
+    /**
+     * Проверка наличия специальности в коллекции
+     * @param list коллекция специальностей
+     * @param specialization специальность
+     * @return -1 - если не найдено, иначе индекс элемента
+     */
+    private int hasSpecialization(List<Specialization> list, Specialization specialization){
+        if(specialization.getId() == null) return -1;
+        for (int i = 0; i < list.size(); i++){
+            if(list.get(i).getId() != null &&
+                   list.get(i).getId().equals(specialization.getId())){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Удаление факультета
+     * @param faculty Факультет для удаления
+     * @throws ServiceException ошибка выполнения или ошибка сети
+     */
     public void deleteFaculty(Faculty faculty) throws ServiceException{
         try {
             if(faculty.getId() != null && faculty.getId() > 0)

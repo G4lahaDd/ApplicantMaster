@@ -4,6 +4,13 @@ import App.controller.command.exception.CommandException;
 import App.model.service.exception.NoConnectionException;
 import App.model.service.exception.ServiceException;
 
+/**
+ * Команда работающая с сетью
+ * Обрабатывает ошибки поключения к сети
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public abstract class RemoteCommand implements Command{
 
     @Override
@@ -18,8 +25,19 @@ public abstract class RemoteCommand implements Command{
         }
     }
 
+    /**
+     *
+     * @param params Параметры команды
+     * @throws CommandException Ошибка выполнения команды
+     * @throws ServiceException Ошибка подключения к сети или ошибка выполнения в слое модели
+     */
     protected abstract void executeRemote(Param params) throws CommandException, ServiceException;
 
+    /**
+     * Обработка исключения подключения к сети
+     * @param params Параметры команды
+     * @throws CommandException Ошибка выполнения команды
+     */
     protected void handleNoConnectionException(Param params) throws CommandException{
         Param param = new Param();
         Container<Boolean> result = new Container<>(false);

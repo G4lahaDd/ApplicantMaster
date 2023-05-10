@@ -10,7 +10,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс для связывания сущностей специальности и базы данных
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class SpecializationDao {
+    //region SQL запросы
     private static final String SQL_GET_ALL_FACULTY_SPECIALIZATIONS =
             "Select * " +
                     "FROM specializations WHERE faculty_id = ?";
@@ -27,10 +34,20 @@ public class SpecializationDao {
     private static final String SQL_DELETE_SPECIALIZATION =
             "DELETE FROM specializations WHERE id = ?";
 
+    //endregion
 
+    /**
+     * Единственный экземпляр класса
+     */
     private static final SpecializationDao INSTANCE = new SpecializationDao();
     private final DBService db = DBService.getInstance();
 
+    /**
+     * Получение всех специальностей факультета
+     * @param facultyId id факультета
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public List<Specialization> getAllFacultySpecialization(int facultyId) throws DaoException, NoConnectionException {
         List<Specialization> specializations = new ArrayList<>();
         try(
@@ -48,6 +65,15 @@ public class SpecializationDao {
         return specializations;
     }
 
+    /**
+     * Добавление специальности в базу данных
+     *
+     * @param specialization специальность
+     * @param facultyId id факультета
+     * @return кол-во здобавленных строк в БД
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public int addSpecialization(Specialization specialization, int facultyId) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
@@ -75,6 +101,14 @@ public class SpecializationDao {
         return -1;
     }
 
+    /**
+     * Проверка наличия специальности у факультета
+     * @param specialization специальность
+     * @param facultyId факультет
+     * @return true - если имеется, иначе false
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public boolean hasSpecialization(Specialization specialization, int facultyId) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
@@ -93,6 +127,13 @@ public class SpecializationDao {
         return false;
     }
 
+    /**
+     * Обновление данных специальности
+     * @param specialization специальность
+     * @return кол-во изменнёных строк в БД
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public int updateSpecialization(Specialization specialization) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
@@ -113,6 +154,13 @@ public class SpecializationDao {
         }
     }
 
+    /**
+     * Удаление специальности
+     * @param id id специальности
+     * @return кол-во удалённых строк
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public int deleteSpecialization(int id) throws DaoException, NoConnectionException{
         try(
                 Connection connection = db.getConnection();
@@ -126,9 +174,18 @@ public class SpecializationDao {
         }
     }
 
+    /**
+     * Получение единственно экземпляра класса
+     */
     public static SpecializationDao getInstance(){
         return INSTANCE;
     }
+
+    /**
+     * Создание объекта специальности из результатов запроса к бд
+     * @param resultSet результат запроса
+     * @return Специальность
+     */
     private Specialization createSpecialization(ResultSet resultSet) throws SQLException{
         Specialization spec = new Specialization();
         spec.setId(resultSet.getInt(1));

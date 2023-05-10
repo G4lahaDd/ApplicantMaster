@@ -25,52 +25,70 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Класс, описывающий окно для редактирования специальности
+ *
+ */
 public class EditSpecializationWindow implements Initializable {
     private Container<Specialization> specialization;
     private static byte[] xml;
     private Stage stage;
+    //region Компоненты
     @FXML
-    private TextField specializationCode;
+    private TextField tfSpecializationCode;
     @FXML
-    private TextField groupCode;
+    private TextField tfGroupCode;
     @FXML
-    private TextField specializationName;
+    private TextField tfSpecializationName;
     @FXML
-    private TextField budgetPlaces;
+    private TextField tfBudgetPlaces;
     @FXML
-    private TextField paidPlaces;
+    private TextField tfPaidPlaces;
     @FXML
-    private ChoiceBox<Subject> firstSubject;
+    private ChoiceBox<Subject> chbFirstSubject;
     @FXML
-    private ChoiceBox<Subject> secondSubject;
+    private ChoiceBox<Subject> chbSecondSubject;
     @FXML
-    private Button saveButton;
+    private Button btnSave;
     @FXML
-    private Button closeButton;
-
+    private Button btnClose;
+    //endregion
     private static final Controller controller = Controller.getInstance();
 
     private static final ObservableList<Subject> subjects = FXCollections.observableArrayList(Subject.values());
 
+    /**
+     * Конструктор создающий окно для редактирования специальности
+     * @param specialization Специальность для редактирования
+     */
     public EditSpecializationWindow(Container<Specialization> specialization) {
         this.specialization = specialization;
         load();
     }
 
+    /**
+     * Инициализация графических компонентов панели
+     * @param url Путь к ресурсу с компонентами
+     * @param resourceBundle Набор данных необходимых для компонента
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        firstSubject.setItems(subjects);
-        firstSubject.setValue(subjects.get(0));
-        secondSubject.setItems(subjects);
-        secondSubject.setValue(subjects.get(1));
+        chbFirstSubject.setItems(subjects);
+        chbFirstSubject.setValue(subjects.get(0));
+        chbSecondSubject.setItems(subjects);
+        chbSecondSubject.setValue(subjects.get(1));
 
-        saveButton.setOnAction(EventHandler -> save());
-        closeButton.setOnAction(EventHandler -> close());
+        btnSave.setOnAction(EventHandler -> save());
+        btnClose.setOnAction(EventHandler -> close());
     }
 
+    /**
+     * Загрузка графических компонентов панели из ресурсов
+     */
     private void load() {
         final FXMLLoader loader = new FXMLLoader();
         try {
+            //Если компонент уже загружался, повторная загрузка не требуется
             if (xml == null) {
                 xml = getClass().getResource("EditSpecializationWindow.fxml")
                         .openStream()
@@ -83,7 +101,7 @@ public class EditSpecializationWindow implements Initializable {
             stage = new Stage();
             stage.setScene(scene);
             stage.setTitle("Edit specialization");
-
+            //Получение родительского окна
             Window window = (Window)controller.doReturnCommand("get-current-window");
             Stage InitWindow = window.getStage();
 
@@ -98,28 +116,34 @@ public class EditSpecializationWindow implements Initializable {
         }
     }
 
+    /**
+     * Обновление данных специальности
+     */
     private void update() {
         if (specialization.isEmpty()) return;
         Specialization spec = specialization.get();
-        specializationCode.setText(spec.getCode());
-        specializationName.setText(spec.getName());
-        groupCode.setText(spec.getGroupCode().toString());
-        budgetPlaces.setText(spec.getBudgedPlaces().toString());
-        paidPlaces.setText(spec.getPaidPlaces().toString());
-        firstSubject.setValue(spec.getFirstSubject());
-        secondSubject.setValue(spec.getSecondSubject());
+        tfSpecializationCode.setText(spec.getCode());
+        tfSpecializationName.setText(spec.getName());
+        tfGroupCode.setText(spec.getGroupCode().toString());
+        tfBudgetPlaces.setText(spec.getBudgedPlaces().toString());
+        tfPaidPlaces.setText(spec.getPaidPlaces().toString());
+        chbFirstSubject.setValue(spec.getFirstSubject());
+        chbSecondSubject.setValue(spec.getSecondSubject());
     }
 
+    /**
+     * Сохранение специальности
+     */
     private void save() {
-        String name = specializationName.getText();
-        String code = specializationCode.getText();
+        String name = tfSpecializationName.getText();
+        String code = tfSpecializationCode.getText();
         int groupCode = 0;
         int budgetPlacesCount = 0;
         int paidPlacesCount = 0;
         try {
-            budgetPlacesCount = Integer.parseInt(budgetPlaces.getText());
-            paidPlacesCount = Integer.parseInt(paidPlaces.getText());
-            groupCode = Integer.parseInt(this.groupCode.getText());
+            budgetPlacesCount = Integer.parseInt(tfBudgetPlaces.getText());
+            paidPlacesCount = Integer.parseInt(tfPaidPlaces.getText());
+            groupCode = Integer.parseInt(this.tfGroupCode.getText());
         } catch (NumberFormatException ex) {
             //close();
             new MessageBox("Неверно введено количество мест или номер группы");
@@ -137,15 +161,27 @@ public class EditSpecializationWindow implements Initializable {
         specialization.get().setGroupCode(groupCode);
         specialization.get().setBudgedPlaces(budgetPlacesCount);
         specialization.get().setPaidPlaces(paidPlacesCount);
-        specialization.get().setFirstSubject(firstSubject.getValue());
-        specialization.get().setSecondSubject(secondSubject.getValue());
+        specialization.get().setFirstSubject(chbFirstSubject.getValue());
+        specialization.get().setSecondSubject(chbSecondSubject.getValue());
         close();
     }
 
+    /**
+     * Закрытие окна
+     */
     private void close() {
         stage.close();
     }
 
+    /**
+     * Проварка данных на валидность
+     * @param name Название специальности
+     * @param code Код специальности
+     * @param groupCode Код группы
+     * @param budgetPlaces Количество бюджетных мест
+     * @param paidPlaces Количество платных мест
+     * @return true - если все данные верны, иначе false
+     */
     private boolean isValid(String name, String code, int groupCode, int budgetPlaces, int paidPlaces) {
         if (name.isEmpty()
                 && code.isEmpty()

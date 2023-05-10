@@ -12,7 +12,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import App.view.controls.MyButton?>
 <?import javafx.scene.control.RadioButton?>
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400" minWidth="600" prefHeight="400.0" prefWidth="600.0" vgap="8.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19">
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<GridPane maxHeight="Infinity" maxWidth="Infinity" minHeight="400" minWidth="600"  prefWidth="Infinity" vgap="8.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
@@ -24,17 +27,17 @@
     <children>
         <HBox fx:id="menu" styleClass="main-menu" alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="24.0">
             <children>
-                <RadioButton fx:id="applicantToggle" mnemonicParsing="false" styleClass="menu-toggle" text="Абитуриенты">
+                <RadioButton fx:id="tglApplicant" mnemonicParsing="false" styleClass="menu-toggle" text="Абитуриенты">
                     <toggleGroup>
                         <ToggleGroup fx:id="mainMenuGroup" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="groupsToggle" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" styleClass="menu-toggle" text="Списки" toggleGroup="$mainMenuGroup" />
-                <RadioButton fx:id="facultyToggle" layoutX="99.0" layoutY="10.0" mnemonicParsing="false" styleClass="menu-toggle" text="Факультеты" toggleGroup="$mainMenuGroup" />
+                <RadioButton fx:id="tglGroups" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" styleClass="menu-toggle" text="Списки" toggleGroup="$mainMenuGroup" />
+                <RadioButton fx:id="tglFaculty" layoutX="99.0" layoutY="10.0" mnemonicParsing="false" styleClass="menu-toggle" text="Факультеты" toggleGroup="$mainMenuGroup" />
             </children>
         </HBox>
-        <Button fx:id="backButton" text="назад" visible="false"/>
-        <AnchorPane fx:id="contentPane" GridPane.rowIndex="1">
+        <Button fx:id="btnBack" text="назад" visible="false"/>
+        <AnchorPane fx:id="pnContent" GridPane.rowIndex="1">
         </AnchorPane>
         <HBox styleClass="outer-menu" alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="8.0" GridPane.rowIndex="2">
             <children>

@@ -7,11 +7,20 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Класс, отвечающий за доступ к базе данных
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class DBService {
     private static final String URL = "jdbc:mysql://localhost:3306/applicantdb";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "123321";
     private Connection connection;
+    /**
+     * Единственный  экземпляр класса
+     */
     private static DBService INSTANCE;
 
     private DBService(){
@@ -24,11 +33,19 @@ public class DBService {
         }
     }
 
+    /**
+     * Получение единственного экземпляра класса
+     * @return Единсвтвенный экземпляр класса
+     */
     public static DBService getInstance(){
         if(INSTANCE == null) INSTANCE = new DBService();
         return INSTANCE;
     }
 
+    /**
+     * Попытка создать подключение к БД
+     * @return true - если успешно, иначе false
+     */
     public boolean tryReconnect() {
         try {
             this.connection = new ProxyConnection(DriverManager.getConnection(URL, USERNAME, PASSWORD));
@@ -39,6 +56,11 @@ public class DBService {
         }
     }
 
+    /**
+     * Получение подключения к БД
+     * @return Подключение к базе данных
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public Connection getConnection() throws NoConnectionException {
         if (connection == null) {
             if(!tryReconnect())
@@ -47,6 +69,10 @@ public class DBService {
         return connection;
     }
 
+    /**
+     * Закрытие подключения к базе данных
+     * @throws ServiceException Ошибка закрытия подключения
+     */
     public void closeConnection() throws ServiceException {
         if (connection instanceof ProxyConnection) {
             ((ProxyConnection) connection).reallyClose();

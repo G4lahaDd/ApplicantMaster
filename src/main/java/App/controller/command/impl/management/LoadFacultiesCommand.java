@@ -9,6 +9,12 @@ import App.model.service.ApplicationDataService;
 
 import java.util.List;
 
+/**
+ * Команда загрузки списка факультетов
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class LoadFacultiesCommand implements Command {
     private static final ApplicationDataService service = ApplicationDataService.getInstance();
 

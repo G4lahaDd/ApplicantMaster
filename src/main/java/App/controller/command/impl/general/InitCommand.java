@@ -7,6 +7,12 @@ import App.model.service.ApplicationDataService;
 import App.model.service.exception.NoConnectionException;
 import App.model.service.exception.ServiceException;
 
+/**
+ * Команда с инициализацией данных программы
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class InitCommand extends RemoteCommand {
 
     @Override

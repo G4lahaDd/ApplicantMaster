@@ -1,8 +1,13 @@
 package App.model.service.validator;
 
-import App.model.entity.Faculty;
 import App.model.entity.Specialization;
 
+/**
+ * Валидатор данных специальности
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class SpecializationValidator implements Validator {
     private static final SpecializationValidator INSTANCE = new SpecializationValidator();
 

@@ -7,8 +7,13 @@ import App.controller.command.exception.CommandException;
 import App.model.entity.Faculty;
 import App.model.service.FacultyService;
 import App.model.service.exception.ServiceException;
-import App.view.MessageBox;
 
+/**
+ * Команда для обновления данных факультета
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class UpdateFacultyCommand extends RemoteCommand {
     private static final FacultyService service = FacultyService.getInstance();
 
@@ -16,13 +21,9 @@ public class UpdateFacultyCommand extends RemoteCommand {
     public void executeRemote(Param params) throws CommandException, ServiceException {
         if (params == null) return;
         Object object = params.getParameter(ParamName.FACULTY);
-        if (object != null
-                && object instanceof Faculty) {
-                System.out.println("Update faculty command");
-                boolean result = service.updateFaculty((Faculty) object);
-                if(!result){
-                    new MessageBox("Не удалось обновить факультет");
-                }
+        if (object != null && object instanceof Faculty) {
+            boolean result = service.updateFaculty((Faculty) object);
+            params.addParameter(ParamName.RETURN, result);
         }
     }
 }

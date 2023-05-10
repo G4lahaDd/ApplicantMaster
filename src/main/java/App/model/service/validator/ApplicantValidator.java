@@ -2,6 +2,12 @@ package App.model.service.validator;
 
 import App.model.entity.Applicant;
 
+/**
+ * Валидатор данных абитуриента
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class ApplicantValidator implements Validator{
     private static final ApplicantValidator INSTANCE = new ApplicantValidator();
 

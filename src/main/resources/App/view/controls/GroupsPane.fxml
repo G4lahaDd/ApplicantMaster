@@ -22,16 +22,15 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <Button fx:id="createButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Создать" />
-        <ChoiceBox fx:id="facultyChoice" prefWidth="150.0" GridPane.columnIndex="1" />
-        <ChoiceBox fx:id="specializationChoice" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="2" />
+        <Button fx:id="btnCreate" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Создать" />
+        <ChoiceBox fx:id="chbFaculty" prefWidth="150.0" GridPane.columnIndex="1" />
+        <ChoiceBox fx:id="chbSpecialization" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="2" />
         <GridPane GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="60.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="18.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" percentWidth="62.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" percentWidth="16.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" percentWidth="11.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" percentWidth="11"/>
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -52,8 +51,8 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="40" minHeight="40" prefHeight="40.0" vgrow="SOMETIMES" />
             </rowConstraints>
-            <VBox fx:id="groupsList" prefHeight="200.0" prefWidth="100.0" />
-            <Button fx:id="exportButton" maxWidth="150" text="Экспорт" GridPane.rowIndex="1" />
+            <VBox fx:id="boxGroupsList" prefHeight="200.0" prefWidth="100.0" />
+            <Button fx:id="btnExport" maxWidth="150" text="Экспорт" GridPane.rowIndex="1" />
         </GridPane>
     </children>
     <padding>

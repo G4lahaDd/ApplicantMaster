@@ -8,6 +8,12 @@ import App.model.entity.Applicant;
 import App.model.service.ApplicantService;
 import App.model.service.exception.ServiceException;
 
+/**
+ * Команда для удаления абитуриента
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class DeleteApplicantCommand extends RemoteCommand {
     private static final ApplicantService service = ApplicantService.getInstance();
 

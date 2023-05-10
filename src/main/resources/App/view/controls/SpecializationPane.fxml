@@ -19,8 +19,8 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label fx:id="specializationCode" text="Label" style="-fx-font-size: 14"/>
-      <Label fx:id="specializationName" maxHeight="100" style="-fx-font-size: 16; -fx-font-weight: bold;" wrapText="true" GridPane.rowIndex="1"/>
+      <Label fx:id="lblSpecializationCode" text="Label" style="-fx-font-size: 14"/>
+      <Label fx:id="lblSpecializationName" maxHeight="100" style="-fx-font-size: 16; -fx-font-weight: bold;" wrapText="true" GridPane.rowIndex="1"/>
       <GridPane hgap="8.0" GridPane.rowIndex="2">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="35.0" prefWidth="100.0" />
@@ -45,12 +45,12 @@
                   <AnchorPane prefHeight="200.0" prefWidth="200.0" styleClass="place-pane">
                      <children>
                         <Label alignment="CENTER" text="Бюджет" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="8.0" style="-fx-font-size: 16"/>
-                        <Label fx:id="budgetPlaces" alignment="CENTER" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblBudgetPlaces" alignment="CENTER" layoutX="10.0" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
                      </children>
                   </AnchorPane>
                   <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" styleClass="place-pane" GridPane.columnIndex="1">
                      <children>
-                        <Label fx:id="paidPlaces" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblPaidPlaces" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
                         <Label alignment="CENTER" layoutX="35.0" layoutY="8.0" text="Платное" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="8.0" style="-fx-font-size: 16"/>
                      </children>
                   </AnchorPane>
@@ -66,18 +66,18 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Label fx:id="firstSubject" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="subject-label" style="-fx-font-size: 16;">
+                  <Label fx:id="lblFirstSubject" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="subject-label" style="-fx-font-size: 16;">
                      <padding>
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                  <Label fx:id="secondSubject" layoutX="10.0" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="subject-label" style="-fx-font-size: 16;" GridPane.rowIndex="1">
+                  <Label fx:id="lblSecondSubject" layoutX="10.0" layoutY="25.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="subject-label" style="-fx-font-size: 16;" GridPane.rowIndex="1">
                      <padding>
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                  <Button fx:id="editButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Редактировать" GridPane.columnIndex="1"></Button>
-                  <Button fx:id="deleteButton" layoutX="238.0" layoutY="21.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Удалить" GridPane.columnIndex="1" GridPane.rowIndex="1"></Button>
+                  <Button fx:id="btnEdit" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Редактировать" GridPane.columnIndex="1"/>
+                  <Button fx:id="btnDelete" layoutX="238.0" layoutY="21.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="0.0" text="Удалить" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                </children>
             </GridPane>
          </children>

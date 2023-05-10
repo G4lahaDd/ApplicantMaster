@@ -11,7 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Класс для связывания сущностей абитуриента и базы данных
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class ApplicantDao {
+    //region SQL запросы
     private static final String SQL_GET_ALL_APPLICANT = "SELECT * FROM applicants";
     private static final String SQL_GET_ALL_APPLICANT_BY_FILTER = "SELECT * FROM applicants WHERE ";
     private static final String SQL_ADD_APPLICANT = "INSERT INTO applicantdb.applicants (name, surname, patronymic, language, first, second, mark, on_paid_base, faculty_id, birthday) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -25,15 +32,31 @@ public class ApplicantDao {
     private static final String SQL_GET_PRIORITY_LIST = "SELECT * FROM app_spec WHERE applecant_id = ?";
     private static final String SQL_DELETE_PRIORITY_LIST = "DELETE FROM app_spec WHERE applecant_id = ?";
     private static final String SQL_ADD_PRIORITY_LIST = "INSERT INTO app_spec VALUES ";
+    //endregion
 
     private final DBService db = DBService.getInstance();
+
+    /**
+     * Единственных экземпляр класса
+     */
     private static final ApplicantDao INSTANCE = new ApplicantDao();
 
+
     private ApplicantDao(){}
+
+    /**
+     * получение единственного экземпляра класса
+     */
     public static ApplicantDao getInstance(){
         return INSTANCE;
     }
 
+    /**
+     * Получение всех абитуриентов
+     * @return Коллекция содержащая всех абитуриентов
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public List<Applicant> getAllApplicant() throws DaoException, NoConnectionException {
         List<Applicant> results = new ArrayList<>();
         try (
@@ -50,6 +73,13 @@ public class ApplicantDao {
         return results;
     }
 
+    /**
+     * Получение всех абитуриентов по фильтру
+     * @param sql_filter Фильтр содержащий синтаксис SQL
+     * @return Коллекция абитуриентов подходящих под условия фильтра
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public List<Applicant> getAllApplicantByFilter(String sql_filter) throws DaoException, NoConnectionException{
         List<Applicant> results = new ArrayList<>();
         try (
@@ -67,6 +97,12 @@ public class ApplicantDao {
         return results;
     }
 
+    /**
+     * Добавление абитуриента
+     * @param applicant абитуриент
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public void addApplicant(Applicant applicant) throws DaoException, NoConnectionException{
         try (
                 Connection connection = db.getConnection();
@@ -96,6 +132,12 @@ public class ApplicantDao {
         }
     }
 
+    /**
+     * Обновление данных абитуриента
+     * @param applicant Абитуриент
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public void updateApplicant(Applicant applicant) throws DaoException, NoConnectionException{
         try (
                 Connection connection = db.getConnection();
@@ -121,6 +163,12 @@ public class ApplicantDao {
         }
     }
 
+    /**
+     * Удаление абитуриента
+     * @param id Уникальный номер абитуриента
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public void deleteApplicant(int id) throws DaoException, NoConnectionException{
         try (
                 Connection connection = db.getConnection();
@@ -133,6 +181,14 @@ public class ApplicantDao {
         }
     }
 
+    /**
+     * Получение списка специальностей с учетом их приоритетности
+     *
+     * @param id Индивидуальный номер абитуриента
+     * @return коллекция выбранных специальностей с учетом их приоритетности (приоритет - специальность)
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     private Map<Integer, Integer> getPriorityList(int id) throws DaoException, NoConnectionException{
         Map<Integer, Integer> result = new HashMap<>();
         try (
@@ -151,6 +207,14 @@ public class ApplicantDao {
         return result;
     }
 
+    /**
+     * Установление списка специальностей с учетом их приоритетности
+     *
+     * @param prioritySpec список специальностей с учетом их приоритетности (приоритет - специальность)
+     * @param id Индивидуальный номер абитуриента
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     private void addPriorityList(Map<Integer, Integer> prioritySpec, int id) throws DaoException, NoConnectionException{
         StringBuilder stringBuilder = new StringBuilder(SQL_ADD_PRIORITY_LIST);
         for (Map.Entry<Integer, Integer> entry : prioritySpec.entrySet()) {
@@ -170,6 +234,14 @@ public class ApplicantDao {
         }
     }
 
+    /**
+     * Обновление списка специальностей с учетом их приоритетности
+     *
+     * @param prioritySpec список специальностей с учетом их приоритетности (приоритет - специальность)
+     * @param id Индивидуальный номер абитуриента
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     private void updatePriorityList(Map<Integer, Integer> prioritySpec, int id) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
@@ -183,6 +255,15 @@ public class ApplicantDao {
         addPriorityList(prioritySpec, id);
     }
 
+
+    /**
+     * Создание объекста абитуриента из результата выполнения запроса к базе данных
+     *
+     * @param resultSet результат выполнения запроса
+     * @return экземпляр абитуриента
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     private Applicant CreateApplicant(ResultSet resultSet) throws SQLException, DaoException, NoConnectionException{
         Applicant applicant = new Applicant();
         applicant.setId(resultSet.getInt(1));

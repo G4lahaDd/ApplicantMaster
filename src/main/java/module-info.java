@@ -5,6 +5,7 @@ module App{
     requires org.apache.poi.poi;
     requires org.apache.logging.log4j;
     requires mysql.connector.j;
+    requires java.desktop;
 
 
     exports App.controller;

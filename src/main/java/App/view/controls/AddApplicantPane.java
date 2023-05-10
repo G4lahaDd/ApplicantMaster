@@ -7,7 +7,7 @@ import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
 import App.model.entity.Subject;
-import App.view.Exception.EmptyFieldException;
+import App.view.exception.EmptyFieldException;
 import App.view.MessageBox;
 import App.view.Parser;
 import javafx.collections.FXCollections;
@@ -31,40 +31,47 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+/**
+ * Класс, описывающий панель для добавления абитуриентов
+ *
+ * @author Kazyro I. A.
+ * @version 1.0
+ */
 public class AddApplicantPane extends GridPane implements Initializable, Refreshable {
+    //region Компоненты
     @FXML
-    private TextField nameField;
+    private TextField tfName;
     @FXML
-    private TextField surnameField;
+    private TextField tfSurname;
     @FXML
-    private TextField patronymicField;
+    private TextField tfPatronymic;
     @FXML
-    private TextField langPoints;
+    private TextField tfLangPoints;
     @FXML
-    private TextField schoolPoints;
+    private TextField tfSchoolPoints;
     @FXML
-    private TextField firstPoints;
+    private TextField tfFirstPoints;
     @FXML
-    private TextField secondPoints;
+    private TextField tfSecondPoints;
     @FXML
-    private Label firstSubject;
+    private Label lblFirstSubject;
     @FXML
-    private Label secondSubject;
+    private Label lblSecondSubject;
     @FXML
     private DatePicker datePicker;
     @FXML
-    private ScrollPane specializationScroll;
+    private ScrollPane scrSpecialization;
     @FXML
     private VBox specializationList;
     @FXML
-    private ChoiceBox<String> facultyChoiceBox;
+    private ChoiceBox<String> chbFaculty;
     @FXML
-    private CheckBox isPaidCheckBox;
+    private CheckBox chkIsPaidCheckBox;
     @FXML
-    private GridPane pointsPane;
+    private GridPane pnlPoints;
     @FXML
-    private Button addButton;
-
+    private Button btnAdd;
+    //endregion
     private static final Controller controller = Controller.getInstance();
     private List<Faculty> faculties;
     private Faculty selectedFaculty;
@@ -74,6 +81,10 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
     private PaneMode paneMode;
     private EventHandler onClose;
 
+    /**
+     * Стандартный конструктор класса, используется при создании пустой панели
+     * без предварительных данных
+     */
     public AddApplicantPane() {
         super();
         load();
@@ -81,6 +92,10 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         paneMode = PaneMode.ADD;
     }
 
+    /**
+     * Конструктор класса, используется при создании панели
+     * с предварительными данными об изменяемом абитуриенте
+     */
     public AddApplicantPane(Applicant applicant) {
         super();
         load();
@@ -91,18 +106,26 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         updateDataOnWindow();
     }
 
+    /**
+     * Загрузка данных необходимых для работы панели
+     */
     private void loadData() {
+        //Загрузка существующих факультетов
         Param returnParam = new Param();
         controller.doCommand("load-faculties",returnParam);
         faculties = (List<Faculty>)returnParam.getParameter(ParamName.RETURN);
+        //Заполнение списка аббревиатур факультетов
         ObservableList<String> facultiesAbbr = FXCollections.observableArrayList();
         for (Faculty faculty : faculties) {
             facultiesAbbr.add(faculty.getAbbreviation());
         }
-        facultyChoiceBox.setItems(facultiesAbbr);
-        facultyChoiceBox.setOnAction(EventHandler -> selectFaculty());
+        chbFaculty.setItems(facultiesAbbr);
+        chbFaculty.setOnAction(EventHandler -> selectFaculty());
     }
 
+    /**
+     * Загрузка компонентов интерфейса из ресурсов
+     */
     private void load() {
         final FXMLLoader loader = new FXMLLoader(getClass().getResource("AddApplicantPane.fxml"));
         try {
@@ -114,11 +137,16 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         }
     }
 
+    /**
+     * Инициализация графических компонентов панели
+     * @param url Путь к ресурсу с компонентами
+     * @param resourceBundle Набор данных необходимых для компонента
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        pointsPane.setVisible(false);
-        addButton.setOnAction(EventHandler -> add());
-        specializationList.prefWidthProperty().bind(specializationScroll.widthProperty());
+        pnlPoints.setVisible(false);
+        btnAdd.setOnAction(EventHandler -> add());
+        specializationList.prefWidthProperty().bind(scrSpecialization.widthProperty());
         specializationList.setPadding(new Insets(0, 18, 0, 0));
         SpecializationToggle.setOnChooseFirst(this::selectFirstSpecialization);
         SpecializationToggle.setOnLostFirst(EventHandler -> onLostSpecialization());
@@ -138,7 +166,8 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
                     return base.fromString(string);
                 } catch (DateTimeParseException ex) {
                     System.out.println("Неверно введена дата");
-                    return null;
+                    new MessageBox("Неверно введена дата");
+                    return LocalDate.now().minusYears(17);
                 }
             }
         };
@@ -147,38 +176,52 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
 
     @Override
     public void refresh() {
-        ObservableList<String> facultiesAbbr = facultyChoiceBox.getItems();
+        ObservableList<String> facultiesAbbr = chbFaculty.getItems();
         facultiesAbbr.clear();
         selectedFaculty = null;
-        facultyChoiceBox.setValue("");
+        chbFaculty.setValue("");
         specializationList.getChildren().clear();
+        //Обновление переключателя
         SpecializationToggle.clear();
         SpecializationToggle.setOnChooseFirst(this::selectFirstSpecialization);
         SpecializationToggle.setOnLostFirst(EventHandler -> onLostSpecialization());
+        //Обновление данных факультетов
         for (Faculty faculty : faculties) {
             facultiesAbbr.add(faculty.getAbbreviation());
         }
     }
 
+    /**
+     * Установка метода обработки события закрытия панели
+     */
     public void setOnClose(EventHandler onClose) {
         this.onClose = onClose;
     }
 
+    /**
+     * Выбор специальности
+     */
     private void selectFaculty() {
-        pointsPane.setVisible(false);
-        String selAbbr = facultyChoiceBox.getValue();
+        pnlPoints.setVisible(false);
+        String selAbbr = chbFaculty.getValue();
         if (selAbbr == null) return;
         if (selAbbr.isEmpty()) return;
         selectedFaculty = faculties.stream().filter(x -> x.getAbbreviation().equals(selAbbr))
                 .findAny().get();
+        //Очистка спика специальностей
         specializationList.getChildren().clear();
         SpecializationToggle.clear();
         if (selectedFaculty.getSpecializations() == null) return;
+        //Заполнение списка специальностей
         for (Specialization specialization : selectedFaculty.getSpecializations()) {
             specializationList.getChildren().add(new SpecializationToggle(specialization));
         }
     }
 
+    /**
+     * Выбор первой специальности, по предметам первой специальности фильтруются остальные специальности
+     * @param event Объект события, содержит выбранный переключатель
+     */
     private void selectFirstSpecialization(Event event) {
         Object source = event.getSource();
         if (!(source instanceof SpecializationToggle)) return;
@@ -187,6 +230,7 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         selectedFirstSubj = specialization.getFirstSubject();
         selectedSecondSubj = specialization.getSecondSubject();
 
+        //Фильтрация по первому и второму предмету
         for (int i = specializationList.getChildren().size() - 1; i >= 0; i--) {
             SpecializationToggle specToggle = (SpecializationToggle) specializationList.getChildren().get(i);
             if (specToggle.getSpecialization().getFirstSubject() != selectedFirstSubj
@@ -195,37 +239,45 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
             }
         }
 
-        firstSubject.setText(selectedFirstSubj.toString());
-        secondSubject.setText(selectedSecondSubj.toString());
-        pointsPane.setVisible(true);
+        //Обновление компонентов ввода
+        lblFirstSubject.setText(selectedFirstSubj.toString());
+        lblSecondSubject.setText(selectedSecondSubj.toString());
+        pnlPoints.setVisible(true);
     }
 
+    /**
+     * При отмене выбора последней специальности сбрасывается фильтр специальностей
+     */
     private void onLostSpecialization() {
-        pointsPane.setVisible(false);
+        pnlPoints.setVisible(false);
         specializationList.getChildren().clear();
         for (Specialization specialization : selectedFaculty.getSpecializations()) {
             specializationList.getChildren().add(new SpecializationToggle(specialization));
         }
     }
 
+    /**
+     * Обновление данных абитуриента
+     */
     private void updateDataOnWindow() {
         if (applicant == null) return;
-        nameField.setText(applicant.getName());
-        surnameField.setText(applicant.getSurname());
-        patronymicField.setText(applicant.getPatronymic());
+        tfName.setText(applicant.getName());
+        tfSurname.setText(applicant.getSurname());
+        tfPatronymic.setText(applicant.getPatronymic());
         datePicker.setValue(applicant.getBirthday());
-        isPaidCheckBox.setSelected(applicant.getOnPaidBase());
+        chkIsPaidCheckBox.setSelected(applicant.getOnPaidBase());
 
-        langPoints.setText(applicant.getLanguagePoints().toString());
-        schoolPoints.setText(applicant.getSchoolMark().toString());
-        firstPoints.setText(applicant.getFirstSubjPoints().toString());
-        secondPoints.setText(applicant.getSecondSubjPoints().toString());
+        tfLangPoints.setText(applicant.getLanguagePoints().toString());
+        tfSchoolPoints.setText(applicant.getSchoolMark().toString());
+        tfFirstPoints.setText(applicant.getFirstSubjPoints().toString());
+        tfSecondPoints.setText(applicant.getSecondSubjPoints().toString());
 
         int facultyId = applicant.getFacultyId();
         Optional<Faculty> faculty = faculties.stream().filter(x -> x.getId().equals(facultyId)).findFirst();
         if (faculty.isEmpty()) return;
         selectedFaculty = faculty.get();
-        facultyChoiceBox.setValue(faculty.get().getAbbreviation());
+        chbFaculty.setValue(faculty.get().getAbbreviation());
+        //Заполнение списка выбранных специальностей
         Map<Integer, Integer> prioritySpec = applicant.getPrioritySpecializations();
         for(int i = 1; i <= prioritySpec.size(); i++){
             int specId = prioritySpec.get(i);
@@ -238,21 +290,27 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         }
     }
 
+    /**
+     * Добавление абитуриента
+     */
     private void add() {
         try {
-            String surname = Parser.getText(surnameField);
-            String name = Parser.getText(nameField);
-            String patronymic = Parser.getText(patronymicField);
-            int lang = Parser.getInt(langPoints);
-            int firstSubj = Parser.getInt(firstPoints);
-            int secondSubj = Parser.getInt(secondPoints);
-            int schoolPoints = Parser.getInt(this.schoolPoints);
+            //Получение значений полей для ввода,
+            //если поле не валидное (пустое или не содержит число)
+            //выбрасывается исключение EmptyFieldException или NumberFormatException
+            String surname = Parser.getText(tfSurname);
+            String name = Parser.getText(tfName);
+            String patronymic = Parser.getText(tfPatronymic);
+            int lang = Parser.getInt(tfLangPoints);
+            int firstSubj = Parser.getInt(tfFirstPoints);
+            int secondSubj = Parser.getInt(tfSecondPoints);
+            int schoolPoints = Parser.getInt(this.tfSchoolPoints);
 
             LocalDate birthday = datePicker.getValue();
             if (birthday == null) throw new DateTimeException("null");
 
-            boolean isPaid = isPaidCheckBox.isSelected();
-
+            boolean isPaid = chkIsPaidCheckBox.isSelected();
+            //заполнение приоритета специльностей
             Map<Integer, Integer> specializationMap = new HashMap<>();
             for (Node node : specializationList.getChildren()) {
                 SpecializationToggle toggle = (SpecializationToggle) node;
@@ -260,10 +318,12 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
                     specializationMap.put(toggle.getIndex(), toggle.getSpecialization().getId());
                 }
             }
+
             if (specializationMap.size() == 0) {
                 new MessageBox("необходимо выбрать специальности");
                 return;
             }
+
 
             String commandName = "edit-applicant";
             if (paneMode == PaneMode.ADD) {
@@ -303,30 +363,41 @@ public class AddApplicantPane extends GridPane implements Initializable, Refresh
         }
     }
 
+    /**
+     * Очистка полей ввода
+     */
     private void clear() {
-        nameField.setText("");
-        surnameField.setText("");
-        patronymicField.setText("");
-        langPoints.setText("");
-        firstPoints.setText("");
-        secondPoints.setText("");
-        schoolPoints.setText("");
-        isPaidCheckBox.setSelected(false);
+        tfName.setText("");
+        tfSurname.setText("");
+        tfPatronymic.setText("");
+        tfLangPoints.setText("");
+        tfFirstPoints.setText("");
+        tfSecondPoints.setText("");
+        tfSchoolPoints.setText("");
+        chkIsPaidCheckBox.setSelected(false);
 
         selectedFaculty = null;
-        facultyChoiceBox.setValue("");
+        chbFaculty.setValue("");
 
         specializationList.getChildren().clear();
-        pointsPane.setVisible(false);
+        pnlPoints.setVisible(false);
         SpecializationToggle.clear();
     }
 
+    /**
+     * Закрытие панели
+     */
     private void close() {
         if (onClose != null) {
             onClose.handle(new Event(Event.ANY));
         }
     }
 
+    /**
+     * Перечесление указывающее тип панели:
+     * Редактирование существуюзего абитуриента
+     * Добавление нового абитуриента
+     */
     private enum PaneMode {
         EDIT,
         ADD

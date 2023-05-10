@@ -2,71 +2,93 @@ package App.view.controls;
 
 import App.controller.Controller;
 import App.controller.command.Container;
-import App.controller.command.Delegate;
 import App.controller.command.Param;
 import App.controller.command.ParamName;
 import App.model.entity.Faculty;
 import App.model.entity.Specialization;
 import App.view.ConfirmBox;
 import App.view.MessageBox;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Класс, описывающий панель для отображения факультетов
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class FacultyPane extends GridPane implements Initializable {
+    //region Компоненты
     @FXML
-    private ScrollPane facultyScroll;
+    private ScrollPane scrFaculty;
     @FXML
-    private ScrollPane specializationsScroll;
+    private ScrollPane scrSpecializations;
     @FXML
-    private VBox facultyList;
+    private VBox boxFacultyList;
     @FXML
-    private VBox specializations;
+    private VBox boxSpecializations;
     @FXML
-    private TextField facultyName;
+    private TextField tfFacultyName;
     @FXML
-    private TextField facultyAbbr;
+    private TextField tfFacultyAbbr;
     @FXML
-    private TextField facultyCode;
+    private TextField tfFacultyCode;
     @FXML
-    private Button addFacultyButton;
+    private Button btnAddFaculty;
     @FXML
-    private Button updateFacultyButton;
+    private Button btnUpdateFaculty;
     @FXML
-    private Button deleteFacultyButton;
+    private Button btnDeleteFaculty;
     @FXML
-    private Button createSpecializationButton;
-
+    private Button btnCreateSpecialization;
+    @FXML
+    private Label lblWarning;
+    //endregion
     private List<Faculty> faculties;
+    private List<Faculty> nonSavedFaculties;
+
     private Faculty selectedFaculty;
     private final ToggleGroup facultyGroup = new ToggleGroup();
-    private final Delegate selectFacultyMethod = param -> selectFaculty((Faculty) param);
+    private final EventHandler selectFacultyMethod = e -> selectFaculty(e);
 
+    /**
+     * Конструктор с инифиализацией графических компонентов
+     */
     public FacultyPane() {
         super();
         load();
     }
 
+    /**
+     * Конструктор с инифиализацией графических компонентов,
+     * заполняющий список факультетов
+     * @param faculties список факультетов
+     */
     public FacultyPane(List<Faculty> faculties) {
         super();
         load();
         this.faculties = faculties;
-        init();
+        initFaculties();
+        nonSavedFaculties = new ArrayList<>();
     }
 
+    /**
+     * Загрузка графических элементов окна
+     */
     private void load() {
         final FXMLLoader loader = new FXMLLoader(getClass().getResource("facultyPane.fxml"));
         try {
@@ -78,44 +100,65 @@ public class FacultyPane extends GridPane implements Initializable {
         }
     }
 
+    /**
+     * Инициализация графических компонентов панели
+     * @param url Путь к ресурсу с компонентами
+     * @param resourceBundle Набор данных необходимых для компонента
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        addFacultyButton.setOnAction(EventHandler -> addNewFaculty());
-        updateFacultyButton.setOnAction(EventHandler -> updateFaculty());
-        createSpecializationButton.setOnAction(EventHandler -> createSpecialization());
-        deleteFacultyButton.setOnAction(EventHandler -> deleteFaculty());
-        facultyList.prefWidthProperty().bind(facultyScroll.widthProperty());
-        facultyList.setPadding(new Insets(0,18,0,0));
-        specializations.prefWidthProperty().bind(specializationsScroll.widthProperty());
-        specializations.setPadding(new Insets(0,18,0,0));
+        lblWarning.setVisible(false);
+
+        btnAddFaculty.setOnAction(EventHandler -> addNewFaculty());
+        btnUpdateFaculty.setOnAction(EventHandler -> updateFaculty());
+        btnCreateSpecialization.setOnAction(EventHandler -> createSpecialization());
+        btnDeleteFaculty.setOnAction(EventHandler -> deleteFaculty());
+        boxFacultyList.prefWidthProperty().bind(scrFaculty.widthProperty());
+        boxFacultyList.setPadding(new Insets(0,18,0,0));
+        boxSpecializations.prefWidthProperty().bind(scrSpecializations.widthProperty());
+        boxSpecializations.setPadding(new Insets(0,18,0,0));
     }
 
-    private void init() {
-        facultyList.getChildren().clear();
+    /**
+     * Инициализация списка факультетов
+     */
+    private void initFaculties() {
+        boxFacultyList.getChildren().clear();
         SpecializationPane.setOnDelete(this::deleteSpecialization);
         for (Faculty faculty : faculties) {
-            facultyList.getChildren().add(new FacultyToggle(
+            boxFacultyList.getChildren().add(new FacultyToggle(
                     faculty, selectFacultyMethod, facultyGroup));
         }
     }
 
+    /**
+     * Добавление нового факультета
+     */
     @FXML
     private void addNewFaculty() {
         Faculty faculty = new Faculty();
         faculties.add(faculty);
         FacultyToggle facultyToggle = new FacultyToggle(faculty, selectFacultyMethod, facultyGroup);
-        facultyList.getChildren().add(facultyToggle);
+        boxFacultyList.getChildren().add(facultyToggle);
         facultyToggle.setSelected(true);
         selectedFaculty = faculty;
         updateFacultyData();
+        //Отображение несохранённых данных
+        nonSavedFaculties.add(faculty);
+        lblWarning.setVisible(true);
     }
+
+    /**
+     * Обновление данных факультета
+     */
     @FXML
     private void updateFaculty() {
-        String name = facultyName.getText();
-        String abbr = facultyAbbr.getText();
+        //Заполнение полей
+        String name = tfFacultyName.getText();
+        String abbr = tfFacultyAbbr.getText();
         int code;
         try {
-            code = Integer.parseInt(facultyCode.getText());
+            code = Integer.parseInt(tfFacultyCode.getText());
         }
         catch (Exception ex){
             new MessageBox("Ошибка ввода номера факультета");
@@ -128,13 +171,26 @@ public class FacultyPane extends GridPane implements Initializable {
         selectedFaculty.setName(name);
         selectedFaculty.setAbbreviation(abbr);
         selectedFaculty.setGroupCode(code);
+        //Обновление в бд
         Param param = new Param();
         param.addParameter(ParamName.FACULTY, selectedFaculty);
         String command = "add-faculty";
         if(selectedFaculty.getId() != null && selectedFaculty.getId() != -1) command = "update-faculty";
         Controller.getInstance().doCommand(command, param);
+        //Проверка результатов
+        Boolean result = (Boolean) param.getParameter(ParamName.RETURN);
+        if(result){
+            nonSavedFaculties.remove(selectedFaculty);
+            lblWarning.setVisible(false);
+        }
+        else{
+            new MessageBox("Не удалось добавить факультет");
+        }
     }
 
+    /**
+     * Удаление факультета
+     */
     private void deleteFaculty(){
         if(selectedFaculty == null) return;
 
@@ -147,31 +203,41 @@ public class FacultyPane extends GridPane implements Initializable {
         Param param = new Param();
         param.addParameter(ParamName.FACULTY, selectedFaculty);
         Controller.getInstance().doCommand("delete-faculty", param);
-        FacultyToggle toggle = (FacultyToggle) facultyList.getChildren().stream()
+        FacultyToggle toggle = (FacultyToggle) boxFacultyList.getChildren().stream()
                 .filter(x -> ((FacultyToggle)x).getFaculty().equals(selectedFaculty))
                 .findFirst().get();
-        facultyList.getChildren().remove(toggle);
+        boxFacultyList.getChildren().remove(toggle);
         faculties.remove(selectedFaculty);
         selectedFaculty = null;
+        nonSavedFaculties.remove(selectedFaculty);
+        lblWarning.setVisible(false);
         updateFacultyData();
     }
+
+    /**
+     * Обновление данных факультета на экране
+     */
     private void updateFacultyData() {
-        specializations.getChildren().clear();
+        boxSpecializations.getChildren().clear();
         if (selectedFaculty == null) {
-            facultyName.setText("");
-            facultyAbbr.setText("");
-            facultyCode.setText("");
+            tfFacultyName.setText("");
+            tfFacultyAbbr.setText("");
+            tfFacultyCode.setText("");
+            lblWarning.setVisible(false);
         } else {
-            facultyName.setText(selectedFaculty.getName());
-            facultyAbbr.setText(selectedFaculty.getAbbreviation());
-            facultyCode.setText(selectedFaculty.getGroupCode().toString());
+            tfFacultyName.setText(selectedFaculty.getName());
+            tfFacultyAbbr.setText(selectedFaculty.getAbbreviation());
+            tfFacultyCode.setText(selectedFaculty.getGroupCode().toString());
             if (selectedFaculty.getSpecializations() != null)
                 for (Specialization spec : selectedFaculty.getSpecializations()) {
-                    specializations.getChildren().add(new SpecializationPane(spec));
+                    boxSpecializations.getChildren().add(new SpecializationPane(spec, e -> updateSpecialization(spec)));
                 }
         }
     }
 
+    /**
+     * Создание специальности у факультета
+     */
     private void createSpecialization(){
         if(selectedFaculty == null) {
             new MessageBox("Не выбран факультет");
@@ -181,35 +247,73 @@ public class FacultyPane extends GridPane implements Initializable {
         new EditSpecializationWindow(spec);
         if(spec.isEmpty()) return;
         selectedFaculty.addSpecializations(spec.get());
-        specializations.getChildren().add(new SpecializationPane(spec.get()));
+        boxSpecializations.getChildren().add(new SpecializationPane(spec.get(), e -> updateSpecialization(spec.get())));
+        if(!nonSavedFaculties.contains(selectedFaculty))
+            nonSavedFaculties.add(selectedFaculty);
+        lblWarning.setVisible(true);
     }
 
-    private void deleteSpecialization(Object param){
+    /**
+     * Обновление специальности
+     * @param specialization Специальность
+     */
+    private void updateSpecialization(Specialization specialization){
+        if(!nonSavedFaculties.contains(selectedFaculty))
+            nonSavedFaculties.add(selectedFaculty);
+        lblWarning.setVisible(true);
+    }
 
-        if(!(param instanceof SpecializationPane)) return;
-        SpecializationPane specPane = (SpecializationPane)param;
+    /**
+     * Удаление специальности
+     * @param event Объект события, содержащий специальность
+     */
+    private void deleteSpecialization(Event event){
+        Object object = event.getSource();
+        if(!(object instanceof SpecializationPane)) return;
+        SpecializationPane specPane = (SpecializationPane)object;
         selectedFaculty.removeSpecializations(specPane.getSpecialization());
-        specializations.getChildren().remove(specPane);
+        boxSpecializations.getChildren().remove(specPane);
+        if(!nonSavedFaculties.contains(selectedFaculty))
+            nonSavedFaculties.add(selectedFaculty);
+        lblWarning.setVisible(true);
     }
 
-    private void selectFaculty(Faculty faculty) {
+    /**
+     * Выбор факультета
+     * @param event Объект события, содержащий факультет
+     */
+    private void selectFaculty(Event event) {
+        Faculty faculty = (Faculty)event.getSource();
         if (selectedFaculty != null && selectedFaculty.equals(faculty)) {
             selectedFaculty = null;
+            lblWarning.setVisible(false);
         } else {
             selectedFaculty = faculty;
+            lblWarning.setVisible(nonSavedFaculties.contains(selectedFaculty));
         }
         System.out.println("Selected faculty : " + faculty.getAbbreviation());
         updateFacultyData();
     }
 
+    /**
+     * Проверка факультета на правильность введённых данных
+     * @param name название факультета
+     * @param abbr Аббревиатура факультета
+     * @param code Код Факультета
+     * @return true - если данные правильны, иначе false
+     */
     private boolean validateFaculty(String name, String abbr, int code){
         if(name.isEmpty() && abbr.isEmpty()
-                && code < 1){
+                && (code < 1 || code > 100)){
             return false;
         }
         return true;
     }
 
+    /**
+     * Получение выбранного факультета
+     * @return выбранный факультет
+     */
     public Faculty getSelectedFaculty() {
         return selectedFaculty;
     }

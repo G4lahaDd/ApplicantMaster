@@ -24,15 +24,15 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label fx:id="initials" text="Label"/>
-      <Label maxWidth="Infinity" fx:id="birthday" text="Label" GridPane.columnIndex="1" alignment="CENTER" styleClass="grid-cell"/>
-      <Label maxWidth="Infinity" fx:id="faculty" text="Label" GridPane.columnIndex="2" alignment="CENTER" styleClass="grid-cell"/>
-      <Label maxWidth="Infinity" fx:id="langPoints" text="Label" GridPane.columnIndex="3" alignment="CENTER" styleClass="grid-cell"/>
-      <Label maxWidth="Infinity" fx:id="schoolPoints" text="Label" GridPane.columnIndex="4" alignment="CENTER"/>
-      <Label maxWidth="Infinity" fx:id="firstSubjPoints" text="Label" GridPane.columnIndex="5" alignment="CENTER"/>
-      <Label maxWidth="Infinity" fx:id="secondSubjPoints" text="Label" GridPane.columnIndex="6" alignment="CENTER"/>
-      <Label maxWidth="Infinity" fx:id="isPaid" text="Label" GridPane.columnIndex="7" alignment="CENTER" styleClass="grid-cell"/>
-      <Button styleClass="edit-cell" fx:id="editButton" mnemonicParsing="false" GridPane.columnIndex="8" maxHeight="Infinity" maxWidth="Infinity"/>
+      <Label fx:id="lblInitials" text="Label"/>
+      <Label maxWidth="Infinity" fx:id="lblBirthday" text="Label" GridPane.columnIndex="1" alignment="CENTER" styleClass="grid-cell"/>
+      <Label maxWidth="Infinity" fx:id="lblFaculty" text="Label" GridPane.columnIndex="2" alignment="CENTER" styleClass="grid-cell"/>
+      <Label maxWidth="Infinity" fx:id="lblLangPoints" text="Label" GridPane.columnIndex="3" alignment="CENTER" styleClass="grid-cell"/>
+      <Label maxWidth="Infinity" fx:id="lblSchoolPoints" text="Label" GridPane.columnIndex="4" alignment="CENTER"/>
+      <Label maxWidth="Infinity" fx:id="lblFirstSubjPoints" text="Label" GridPane.columnIndex="5" alignment="CENTER"/>
+      <Label maxWidth="Infinity" fx:id="lblSecondSubjPoints" text="Label" GridPane.columnIndex="6" alignment="CENTER"/>
+      <Label maxWidth="Infinity" fx:id="lblIsPaid" text="Label" GridPane.columnIndex="7" alignment="CENTER" styleClass="grid-cell"/>
+      <Button styleClass="edit-cell" fx:id="btnEdit" mnemonicParsing="false" GridPane.columnIndex="8" maxHeight="Infinity" maxWidth="Infinity"/>
    </children>
    <padding>
       <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />

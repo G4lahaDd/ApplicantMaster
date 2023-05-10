@@ -6,10 +6,18 @@ import javafx.event.EventHandler;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 
+/**
+ * Класс, описывабщий кнопку-переключатель для групппы
+ */
 public class GroupToggle extends ToggleButton {
     private final Group group;
     private static final ToggleGroup toggleGroup = new ToggleGroup();
 
+    /**
+     * Конструктор, инифиализирующий кнопку-переключатель
+     * @param group Группа закреплённая за кнопкой
+     * @param onAction Событие вызываемое на нажатие
+     */
     public GroupToggle(Group group, EventHandler onAction){
         super();
         this.setToggleGroup(toggleGroup);
@@ -21,6 +29,10 @@ public class GroupToggle extends ToggleButton {
         });
     }
 
+    /**
+     * Получение группы закреплённой за кнопкой
+     * @return Группа
+     */
     public Group getGroup() {
         return group;
     }

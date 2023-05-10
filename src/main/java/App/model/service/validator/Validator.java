@@ -1,14 +1,14 @@
 package App.model.service.validator;
 
 /**
- * The interface Validator.
+ * Интерфейс, описывающий прокерку объектов на валидность данных
  */
 public interface Validator {
     /**
-     * Is object valid.
+     * Прокерка объекта на валидность данных
      *
-     * @param object the object
-     * @return the true if object is valid and false if not
+     * @param object объект для проверки
+     * @return true если объект валидный, иначе false
      */
     boolean isValid(Object object);
 }

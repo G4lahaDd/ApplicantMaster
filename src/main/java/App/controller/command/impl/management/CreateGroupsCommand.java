@@ -10,6 +10,12 @@ import App.model.service.exception.ServiceException;
 
 import java.util.List;
 
+/**
+ * Команда создания списков групп
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class CreateGroupsCommand extends RemoteCommand {
     @Override
     protected void executeRemote(Param params) throws CommandException, ServiceException {

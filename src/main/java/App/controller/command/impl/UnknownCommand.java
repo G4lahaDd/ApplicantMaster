@@ -4,6 +4,12 @@ import App.controller.command.Command;
 import App.controller.command.Param;
 import App.controller.command.exception.CommandException;
 
+/**
+ * Неизвесная команда
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class UnknownCommand implements Command {
 
     @Override

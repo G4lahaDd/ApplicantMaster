@@ -8,6 +8,12 @@ import App.controller.command.impl.management.applicant.DeleteApplicantCommand;
 import App.controller.command.impl.management.applicant.FindApplicantsCommand;
 import App.controller.command.impl.management.applicant.UpdateApplicantCommand;
 
+/**
+ * Перечисление всех команд по именам
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public enum CommandName {
     //General
     INIT(new InitCommand()),
@@ -31,10 +37,18 @@ public enum CommandName {
     DELETE_APPLICANT(new DeleteApplicantCommand()),
     FIND_APPLICANTS(new FindApplicantsCommand());
 
+    /**
+     * команда закрепляющаяся за каждым перечислением
+     */
     Command current = null;
     CommandName(Command command){
         current = command;
     }
+
+    /**
+     * Получение команды из объекта перечисляемого типа
+     * @return команда
+     */
     public Command getCurrentCommand() {
         return current;
     }

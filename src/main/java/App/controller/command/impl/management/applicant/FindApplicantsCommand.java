@@ -12,11 +12,18 @@ import javafx.event.EventHandler;
 
 import java.util.List;
 
+/**
+ * Команда для поиска абитуриентов по фильтрам
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class FindApplicantsCommand extends RemoteCommand {
     private static final ApplicantService service = ApplicantService.getInstance();
 
     @Override
     public void executeRemote(Param params) throws CommandException, ServiceException{
+        //создание фильтра под введённые данные
         StringBuilder sql_filter = new StringBuilder();
         try {
             String surname = (String) params.getParameter(ParamName.SURNAME);

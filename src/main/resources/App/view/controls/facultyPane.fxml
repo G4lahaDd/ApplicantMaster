@@ -24,27 +24,28 @@
   </rowConstraints>
    <children>
       <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Факультеты:" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
-      <ScrollPane fx:id="facultyScroll" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+      <ScrollPane fx:id="scrFaculty" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
          <content>
-            <VBox fx:id="facultyList" maxWidth="1.7976931348623157E308" spacing="4"/>
+            <VBox fx:id="boxFacultyList" maxWidth="1.7976931348623157E308" spacing="4"/>
          </content>
       </ScrollPane>
-      <Button fx:id="addFacultyButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Добавить" GridPane.rowIndex="2"/>
+      <Button fx:id="btnAddFaculty" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Добавить" GridPane.rowIndex="2"/>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
          <children>
             <Label layoutY="-1.0" styleClass="title-label" text="Название:" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-            <TextField fx:id="facultyName" layoutX="20.0" layoutY="39.0" prefHeight="40.0" styleClass="input-field" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="40.0" />
-            <Label layoutX="20.0" layoutY="89.0" styleClass="title-label" text="Аббривиатура:" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0"/>
-            <TextField fx:id="facultyAbbr" layoutX="40.0" layoutY="128.0" prefHeight="40.0" prefWidth="210.0" styleClass="input-field" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="130.0" />
+            <TextField fx:id="tfFacultyName" layoutX="20.0" layoutY="39.0" prefHeight="40.0" styleClass="input-field" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="40.0" />
+            <Label layoutX="20.0" layoutY="89.0" styleClass="title-label" text="Аббревиатура:" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0"/>
+            <TextField fx:id="tfFacultyAbbr" layoutX="40.0" layoutY="128.0" prefHeight="40.0" prefWidth="210.0" styleClass="input-field" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="130.0" />
             <Label layoutX="230.0" layoutY="89.0" styleClass="title-label" text="Код:" AnchorPane.leftAnchor="230.0" AnchorPane.topAnchor="90.0"/>
-            <TextField fx:id="facultyCode" layoutX="251.0" layoutY="128.0" prefHeight="40.0" prefWidth="80.0" styleClass="input-field" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="130.0" />
-            <Button fx:id="updateFacultyButton" layoutX="648.0" layoutY="135.0" mnemonicParsing="false" text="Сохранить" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="130.0" />
-            <Button fx:id="deleteFacultyButton" layoutX="648.0" layoutY="135.0" mnemonicParsing="false" text="Удалить" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="130.0" styleClass="delete-button"/>
-            <Label layoutY="187.0" styleClass="title-label" text="Специальности:" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="180.0"/>
-            <Button fx:id="createSpecializationButton" AnchorPane.topAnchor="177.0"  AnchorPane.leftAnchor="220.0" text="+"></Button>
-            <ScrollPane fx:id="specializationsScroll" hbarPolicy="NEVER" layoutX="83.0" layoutY="236.0" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="220.0">
+            <TextField fx:id="tfFacultyCode" layoutX="251.0" layoutY="128.0" prefHeight="40.0" prefWidth="80.0" styleClass="input-field" AnchorPane.leftAnchor="250.0" AnchorPane.topAnchor="130.0" />
+            <Button fx:id="btnUpdateFaculty" layoutX="648.0" layoutY="135.0" mnemonicParsing="false" text="Сохранить" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="130.0" />
+            <Button fx:id="btnDeleteFaculty" layoutX="648.0" layoutY="135.0" mnemonicParsing="false" text="Удалить" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="130.0" styleClass="delete-button"/>
+             <Label layoutY="187.0" styleClass="title-label" text="Специальности:" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="180.0"/>
+             <Button fx:id="btnCreateSpecialization" AnchorPane.topAnchor="177.0"  AnchorPane.leftAnchor="220.0" text="+"/>
+             <Label fx:id="lblWarning" text="Изменения не сохранены!" AnchorPane.topAnchor="185.0" AnchorPane.rightAnchor="20.0" textAlignment="RIGHT" styleClass="warning-label"/>
+            <ScrollPane fx:id="scrSpecializations" hbarPolicy="NEVER" layoutX="83.0" layoutY="236.0" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="220.0">
                <content>
-                  <VBox fx:id="specializations" maxWidth="1.7976931348623157E308" spacing="8"/>
+                  <VBox fx:id="boxSpecializations" maxWidth="1.7976931348623157E308" spacing="8"/>
                </content>
             </ScrollPane>
          </children>

@@ -1,8 +1,13 @@
 package App.model.service.validator;
 
-import App.model.entity.Applicant;
 import App.model.entity.Faculty;
 
+/**
+ * Валидатор данных факультета
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class FacultyValidator implements Validator {
     private static final FacultyValidator INSTANCE = new FacultyValidator();
 

@@ -9,7 +9,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс для связывания сущностей факультета и базы данных
+ *
+ * @author Kazyro I.A.
+ * @version 1.0
+ */
 public class FacultyDao {
+    //region SQL запросы
     private static final String SQL_GET_BY_ID_FACULTY = "SELECT * FROM faculty " +
             "WHERE id = ?";
     private static final String SQL_GET_ALL_FACULTY = "SELECT * FROM faculty";
@@ -18,13 +25,26 @@ public class FacultyDao {
             "SET name = ?, abbr = ?, group_code = ? " +
             "WHERE id = ?";
     private static final String SQL_DELETE_FACULTY = "DELETE FROM faculty WHERE id = ? ";
+    //endregion
+
 
     private final DBService db = DBService.getInstance();
     private final SpecializationDao specializationDao = SpecializationDao.getInstance();
+
+    /**
+     * Единственный экземпляр класса
+     */
     private static final FacultyDao INSTANCE = new FacultyDao();
 
     private FacultyDao(){}
 
+    /**
+     * Получение факультета по его id
+     *
+     * @return экземпляр факультета если найдено, иначе null
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public Faculty getFacultyById(int id) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
@@ -41,6 +61,13 @@ public class FacultyDao {
         return null;
     }
 
+    /**
+     * Получение всех факультетов
+     *
+     * @return коллекция всех факультетов
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public List<Faculty> getAllFaculty() throws DaoException, NoConnectionException {
         List<Faculty> result = new ArrayList<>();
         try (
@@ -58,6 +85,13 @@ public class FacultyDao {
         return result;
     }
 
+    /**
+     * Добавление факультета
+     *
+     * @param faculty Факультет
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public void addFaculty(Faculty faculty) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
@@ -78,6 +112,12 @@ public class FacultyDao {
 
     }
 
+    /**
+     * Обновление данных факультета
+     * @param faculty Факультет
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public void updateFaculty(Faculty faculty) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
@@ -94,6 +134,13 @@ public class FacultyDao {
         }
     }
 
+    /**
+     * Удаление специальности
+     * @param id id факультета
+     * @return кол-во удалённых строк в БД
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     public int deleteFaculty(int id) throws DaoException, NoConnectionException {
         try (
                 Connection connection = db.getConnection();
@@ -107,6 +154,13 @@ public class FacultyDao {
         }
     }
 
+    /**
+     * Создание факультета из результатов выполнения запроса
+     * @param resultSet результат выполнения запроса
+     * @return Факультет
+     * @throws DaoException Ошибка выполнения запроса
+     * @throws NoConnectionException Ошибка подключения к сети
+     */
     private Faculty createFaculty(ResultSet resultSet) throws SQLException, DaoException, NoConnectionException {
         Faculty faculty = new Faculty();
         faculty.setId(resultSet.getInt(1));
@@ -117,6 +171,9 @@ public class FacultyDao {
         return faculty;
     }
 
+    /**
+     * Получение единственного экземпляра класса
+     */
     public static FacultyDao getInstance(){
         return INSTANCE;
     }

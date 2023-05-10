@@ -1,7 +1,11 @@
 package App.model.entity;
 
-import java.util.Arrays;
-
+/**
+ * Перечисление, описывающее предметы
+ *
+ * @author Kazyro I.A
+ * @version 1.0
+ */
 public enum Subject {
     Math(0,"Математика"),
     Physics(1, "Физика"),
@@ -18,14 +22,18 @@ public enum Subject {
         this.name = name;
     }
 
+    /**
+     * Получение кода предмета
+     */
     public int getCode() {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
+    /**
+     * Получение предмета по его коду
+     * @param code код предмета
+     * @return предмет
+     */
     public static Subject valueOf(int code){
         Subject[] subjects = Subject.values();
         for (int i = 0; i < subjects.length; i++) {
